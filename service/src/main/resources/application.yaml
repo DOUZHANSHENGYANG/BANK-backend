@@ -1,0 +1,97 @@
+server:
+  port: 8888
+spring:
+  application:
+    name: bank
+  profiles:
+    active: dev
+  devtools:
+    restart:
+      enabled: true
+#  data:
+#    redis:
+#      host: 127.0.0.1
+#      port: 6379
+#      database: 1
+#      connect-timeout: 3000ms
+#      jedis:
+#        pool:
+#          enabled: true
+#          max-active: 20
+#          max-idle: 8
+#          min-idle: 4
+#          max-wait: -1
+
+
+
+
+
+  datasource: #mybatis配置
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://${bank.db.host}:${bank.db.port}/${bank.db.database}?useUnicode=true&characterEncoding=UTF-8&autoReconnect=true&serverTimezone=Asia/Shanghai
+    username: ${bank.db.username}
+    password: ${bank.db.password}
+    hikari:
+      minimum-idle: 5
+      maximum-pool-size: 10
+
+mybatis-plus: # mp配置
+  configuration:
+    default-enum-type-handler: com.baomidou.mybatisplus.core.handlers.MybatisEnumTypeHandler
+  global-config:
+    db-config:
+      update-strategy: not_null
+      id_type: auto
+    banner: off
+  type-aliases-package: xyz.douzhan.bank.domain.po
+
+
+logging: # 日志
+  level:
+    xyz.douzhan: debug
+  pattern:
+    dateformat: HH:mm:ss:SSS
+  file:
+    path: "logs/${spring.application.name}"
+
+management: # actuator配置
+  endpoints:
+    enabled-by-default: true #暴露所有端点信息
+    web:
+      exposure:
+        include: '*'  #以web方式暴露
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+  group-configs:
+    - group: 'default'
+      paths-to-match: '/**'
+      packages-to-scan: xyz.douzhan.bank.controller
+  show-actuator: true
+# knife4j的增强配置，不需要增强可以不配
+knife4j:
+  enable: true
+  setting:
+    language: zh_cn
+    enable-home-custom: true
+    home-custom-path: classpath:markdown/APIHome.md
+
+#  basic:
+#    enable: false
+#    username: test
+#bank:
+#  jwt:
+#    user-info-name: userInfo
+#    ttl: 30
+#    token: authorization
+#  secret-key:
+#    alias: bank
+#    location: jks/bank.jks
+#    password: 08212786
+
+#    password: 12313
