@@ -36,3 +36,5 @@ build/
 
 ### Mac OS ###
 .DS_Store
+/logs/bank/spring.log
+/logs/bank/spring.log.2023-12-01.0.gz
