@@ -10,6 +10,8 @@ import xyz.douzhan.bank.enums.CardType;
 import xyz.douzhan.bank.enums.Gender;
 import xyz.douzhan.bank.enums.UserStatus;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -24,7 +26,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @TableName("user")
-public class User {
+public class User implements Serializable {
+    @Serial
+    private static final long serialVersionUID=1L;
     //主键
     @TableId(type = IdType.AUTO)
     private Long id;

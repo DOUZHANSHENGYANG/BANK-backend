@@ -1,16 +1,22 @@
 package xyz.douzhan.bank.utils;
 
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.crypto.Mode;
+import cn.hutool.crypto.Padding;
 import cn.hutool.crypto.SecureUtil;
+import cn.hutool.crypto.SmUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
+import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.jwt.signers.JWTSigner;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.stereotype.Component;
 import xyz.douzhan.bank.properties.CypherProperties;
 
+import javax.crypto.SecretKey;
 import java.io.InputStream;
 import java.nio.charset.Charset;
 import java.security.*;
@@ -42,8 +48,35 @@ public class CypherUtils {
         CypherUtils.cypherProperties = cypherProperties;
     }
 
+    /**
+     * 获取sm4实例
+     * @return
+     */
+    public static SM4 getSM4(){
+        return new SM4(
+                Mode.CBC, Padding.ZeroPadding,
+                "abc1111111111333".getBytes(CharsetUtil.CHARSET_UTF_8),
+                "huiyinwobaailiya".getBytes(CharsetUtil.CHARSET_UTF_8));
+    }
 
-
+    /**
+     * sm4加密
+     * @param plainText
+     * @return
+     */
+    public static String encryptSM4(String plainText){
+        SM4 sm4 = getSM4();
+        return Base64.encode(sm4.encrypt(plainText));
+    }
+    /**
+     * sm4解密
+     * @param cipherText
+     * @return
+     */
+    public static String decryptSM4(String cipherText){
+        SM4 sm4 = getSM4();
+        return sm4.decryptStr(Base64.decode(cipherText),CharsetUtil.CHARSET_UTF_8);
+    }
     /**
      * 获取JwtSigner
      * @return

@@ -7,6 +7,8 @@ import xyz.douzhan.bank.enums.BankCardStatus;
 import xyz.douzhan.bank.enums.TransactionStatus;
 import xyz.douzhan.bank.enums.TransferType;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -19,8 +21,10 @@ import java.time.LocalDateTime;
  */
 @Data
 @Builder
-@TableName("tansfer")
-public class Transfer {
+@TableName("transfer")
+public class Transfer implements Serializable {
+    @Serial
+    private static final long serialVersionUID=1L;
     //主键
     @TableId(type = IdType.AUTO)
     private Long id;

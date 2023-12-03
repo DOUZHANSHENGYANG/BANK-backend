@@ -1,5 +1,6 @@
 package xyz.douzhan.bank.demo1;
 
+import cn.hutool.core.util.CharsetUtil;
 import cn.hutool.crypto.SecureUtil;
 import org.bouncycastle.jce.ECNamedCurveTable;
 import org.bouncycastle.jce.interfaces.ECPrivateKey;
@@ -17,6 +18,7 @@ import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.Security;
 import java.util.Arrays;
+import java.util.Base64;
 
 /**
  * 一些声明信息
@@ -28,8 +30,12 @@ import java.util.Arrays;
  */
 @SpringBootTest
 public class ATest {
-    @Autowired
-    private CypherUtils cypherUtils;
+    @Test
+    public void testSM4Encode()throws Exception{
+        String s = CypherUtils.encryptSM4("123456");
+        System.out.println(s);
+        System.out.println(CypherUtils.decryptSM4(s));
+    }
 
 
     @Test

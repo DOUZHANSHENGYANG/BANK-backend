@@ -5,6 +5,8 @@ import lombok.Builder;
 import lombok.Data;
 import xyz.douzhan.bank.enums.BankCardStatus;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -18,7 +20,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @TableName("feedback")
-public class FeedBack {
+public class FeedBack implements Serializable {
+    @Serial
+    private static final long serialVersionUID=1L;
     //主键
     @TableId(type = IdType.AUTO)
     private Long id;

@@ -2,17 +2,15 @@ package xyz.douzhan.bank.utils;
 
 
 import cn.hutool.core.convert.NumberWithFormat;
-import cn.hutool.crypto.SecureUtil;
-import cn.hutool.crypto.SmUtil;
 import cn.hutool.jwt.JWT;
 import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.signers.JWTSigner;
+import lombok.Getter;
 import org.springframework.stereotype.Component;
 import xyz.douzhan.bank.properties.JWTProperties;
 
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
-import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 
 /**
@@ -25,6 +23,7 @@ import java.util.HashMap;
  */
 @Component
 public class JWTUtils {
+   @Getter
     private static JWTProperties jwtProperties;
     private static JWTSigner jwtSigner;
 
@@ -53,6 +52,7 @@ public class JWTUtils {
      * 校验token，失败抛出异常
      *
      * @param token
+     * @return
      */
     public static void verifyToken(String token){
         if(JWTUtil.verify(token, jwtSigner)){

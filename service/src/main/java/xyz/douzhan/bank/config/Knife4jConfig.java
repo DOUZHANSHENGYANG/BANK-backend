@@ -33,14 +33,33 @@ public class Knife4jConfig {
 
     }
     @Bean
-    public GroupedOpenApi publicApi() {
+    public GroupedOpenApi clientApi() {
         return GroupedOpenApi.builder()
-                .group("bank-public")
+                .group("bank-client")
+                .pathsToMatch("/client/**")
+                .build();
+    }
+    @Bean
+    public GroupedOpenApi adminApi() {
+        return GroupedOpenApi.builder()
+                .group("bank-admin")
+                .pathsToMatch("/admin/**")
+                .build();
+    }
+    @Bean
+    public GroupedOpenApi commonApi() {
+        return GroupedOpenApi.builder()
+                .group("bank-common")
+                .pathsToMatch("/common/**")
+                .build();
+    }
+    @Bean
+    public GroupedOpenApi testApi() {
+        return GroupedOpenApi.builder()
+                .group("bank-test")
                 .pathsToMatch("/test/**")
                 .build();
     }
-
-
 
 
 

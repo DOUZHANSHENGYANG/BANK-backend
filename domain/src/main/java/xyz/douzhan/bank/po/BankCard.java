@@ -6,6 +6,8 @@ import lombok.Data;
 import xyz.douzhan.bank.enums.BankCardStatus;
 import xyz.douzhan.bank.enums.BankType;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.time.LocalDateTime;
 
 /**
@@ -19,7 +21,9 @@ import java.time.LocalDateTime;
 @Data
 @Builder
 @TableName("bank_card")
-public class BankCard {
+public class BankCard implements Serializable {
+    @Serial
+    private static final long serialVersionUID=1L;
     //主键
     @TableId(type = IdType.AUTO)
     private Long id;
