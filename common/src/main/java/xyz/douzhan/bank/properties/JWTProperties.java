@@ -16,7 +16,7 @@ import org.springframework.stereotype.Component;
 @Data
 @ConfigurationProperties(prefix = "bank.jwt")
 public class JWTProperties {
-    private String tokenName="authorization";
+    private String tokenName="Authorization";
     private Integer ttl= 3650;
     private String userInfo="userInfo";
 

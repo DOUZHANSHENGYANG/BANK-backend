@@ -1,5 +1,9 @@
 package xyz.douzhan.bank.security.user;
 
+import com.fasterxml.jackson.databind.annotation.JsonDeserialize;
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.datatype.jsr310.deser.LocalDateTimeDeserializer;
+import com.fasterxml.jackson.datatype.jsr310.ser.LocalDateTimeSerializer;
 import lombok.Data;
 import lombok.experimental.Accessors;
 import org.springframework.security.core.GrantedAuthority;
@@ -33,6 +37,8 @@ public class JWTUserRedis implements Serializable {
     /**
      * 登录时间
      */
+    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
+    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime loginTime;
 
     /**

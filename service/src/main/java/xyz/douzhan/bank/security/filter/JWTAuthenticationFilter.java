@@ -14,6 +14,7 @@ import org.springframework.web.filter.OncePerRequestFilter;
 import xyz.douzhan.bank.po.Safe;
 import xyz.douzhan.bank.security.handler.MyAuthenticationException;
 import xyz.douzhan.bank.security.user.JWTUserRedis;
+import xyz.douzhan.bank.security.user.MyAuthenticationDetails;
 import xyz.douzhan.bank.utils.JWTUtils;
 import xyz.douzhan.bank.utils.RedisUtils;
 import xyz.douzhan.bank.utils.SecurityUtils;
@@ -84,7 +85,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
                 safe.getUsername(), null, authorities);
         //4.5 更新安全上下文的持有用户,通过验证
-        authenticationToken.setDetails( new WebAuthenticationDetailsSource().buildDetails(request));
+        authenticationToken.setDetails(new MyAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);
         filterChain.doFilter(request,response);
     }

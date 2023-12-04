@@ -1,7 +1,8 @@
-package xyz.douzhan.bank.dto;
+package xyz.douzhan.bank.vo;
 
 
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -17,14 +18,10 @@ import lombok.experimental.Accessors;
  */
 @Data
 @Accessors(fluent = true,chain = true)
-//@Schema(name = "验证码")
-public class VerifyCodeDTO {
-//    @Schema(name = "验证码类型 0为图形 1为短信")
-    private Integer type;
-//    @Schema(name = "缓存id")
-    private String id;
-//    @Schema(name = "验证码")
-    private String code;
-
+@Schema(description = "图像验证码")
+public class ImgVerifyCodeVO {
+    @Schema(description = "唯一标识")
+    private String uuid;
+    @Schema(description = "图像验证码Base64")
     private String imageBase64Data;
 }

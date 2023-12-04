@@ -21,6 +21,8 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import xyz.douzhan.bank.security.handler.MyAuthenticationException;
 import xyz.douzhan.bank.security.token.JwtAuthenticationToken;
+import xyz.douzhan.bank.security.user.MyAuthenticationDetails;
+import xyz.douzhan.bank.security.user.MyAuthenticationDetailsSource;
 import xyz.douzhan.bank.utils.HttpUtils;
 import xyz.douzhan.bank.utils.RedisUtils;
 
@@ -42,7 +44,8 @@ public class UsernamePasswordLoginFilter extends UsernamePasswordAuthenticationF
     public UsernamePasswordLoginFilter(AuthenticationManager authenticationManager,
                                        AuthenticationSuccessHandler successHandler,
                                        AuthenticationFailureHandler failureHandler,
-                                       ApplicationEventPublisher eventPublisher){
+                                       ApplicationEventPublisher eventPublisher,
+                                       MyAuthenticationDetailsSource myAuthenticationDetailsSource){
         //设置拦截的路径
         setRequiresAuthenticationRequestMatcher(DEFAULT_ANT_PATH_REQUEST_MATCHER);
         //设置交给哪个安全管理器验证
@@ -53,6 +56,8 @@ public class UsernamePasswordLoginFilter extends UsernamePasswordAuthenticationF
         setAuthenticationFailureHandler(failureHandler);
         //设置事件发布器
         setApplicationEventPublisher(eventPublisher);
+        //设置认证信息源
+        setAuthenticationDetailsSource(myAuthenticationDetailsSource);
     }
 
 

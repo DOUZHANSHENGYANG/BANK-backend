@@ -56,12 +56,8 @@ public class Safe implements Serializable {
     private String role;
     //更新时间
     @TableField(fill = FieldFill.INSERT_UPDATE)
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     private LocalDateTime updateTime;
     //创建时间
-    @JsonDeserialize(using = LocalDateTimeDeserializer.class)
-    @JsonSerialize(using = LocalDateTimeSerializer.class)
     @TableField(fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime createTime;
 

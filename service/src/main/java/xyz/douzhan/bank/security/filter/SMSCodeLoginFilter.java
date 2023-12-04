@@ -18,6 +18,9 @@ import org.springframework.security.web.authentication.AuthenticationSuccessHand
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 import xyz.douzhan.bank.security.handler.MyAuthenticationException;
 import xyz.douzhan.bank.security.token.SmsCodeAuthenticationToken;
+
+import xyz.douzhan.bank.security.user.MyAuthenticationDetails;
+import xyz.douzhan.bank.security.user.MyAuthenticationDetailsSource;
 import xyz.douzhan.bank.utils.HttpUtils;
 import xyz.douzhan.bank.utils.RedisUtils;
 
@@ -45,12 +48,15 @@ public class SMSCodeLoginFilter extends AbstractAuthenticationProcessingFilter {
     public SMSCodeLoginFilter(AuthenticationManager authManager,
                               AuthenticationSuccessHandler successHandler,
                               AuthenticationFailureHandler failureHandler,
-                              ApplicationEventPublisher eventPublisher) {
+                              ApplicationEventPublisher eventPublisher,
+                              MyAuthenticationDetailsSource myAuthenticationDetailsSource
+                              ) {
         super(DEFAULT_ANT_PATH_REQUEST_MATCHER);
         setAuthenticationManager(authManager);
         setAuthenticationSuccessHandler(successHandler);
         setAuthenticationFailureHandler(failureHandler);
         setApplicationEventPublisher(eventPublisher);
+        setAuthenticationDetailsSource(myAuthenticationDetailsSource);
     }
     @Override
     public Authentication attemptAuthentication(HttpServletRequest request, HttpServletResponse response) throws AuthenticationException, IOException, ServletException {

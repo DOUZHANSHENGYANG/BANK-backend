@@ -7,6 +7,7 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.ProviderManager;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.annotation.web.configuration.WebSecurityCustomizer;
@@ -24,6 +25,7 @@ import xyz.douzhan.bank.security.filter.UsernamePasswordLoginFilter;
 import xyz.douzhan.bank.security.handler.*;
 import xyz.douzhan.bank.security.provider.SMSCodeAuthenticationProvider;
 import xyz.douzhan.bank.security.provider.UsernamePasswordAuthenticationProvider;
+import xyz.douzhan.bank.security.user.MyAuthenticationDetailsSource;
 import xyz.douzhan.bank.security.user.UserDetailsServiceImpl;
 
 import java.util.Collections;
@@ -39,12 +41,13 @@ import java.util.List;
  */
 @Configuration
 @EnableWebSecurity// @EnableWebSecurity是开启SpringSecurity的默认行为
+@EnableGlobalMethodSecurity(prePostEnabled = true)//开启鉴权注解功能
 @RequiredArgsConstructor
 public class SecurityConfig {
     private static final List<String> WHITE_LIST =
             List.of("/doc.html","/swagger/**","/swagger-ui.html","/swagger-resources/**",
                     "/webjars/**", "/v2/**","/v2/api-docs-ext/**","/v3/api-docs/**",
-                    "/register","/common/**");
+                    "/register","/common/**","/test/**");
 
     private static final List<String> BLACK_LIST = Collections.emptyList();
 
@@ -54,9 +57,11 @@ public class SecurityConfig {
     private final MyAuthenticationSuccessHandler authenticationSuccessHandler;
     private final MyAuthenticationFailureHandler authenticationFailureHandler;
     private final MyAuthenticationEntryPoint authenticationEntryPoint;
+    private final MyLogoutHandler myLogoutHandler;
     private final MyLogoutSuccessHandler logoutSuccessHandler;
     private final MyAccessDeniedHandler accessDeniedHandler;
     private final ApplicationEventPublisher applicationEventPublisher;
+    private final MyAuthenticationDetailsSource myAuthenticationDetailsSource;
     @Bean
     public AuthenticationManager authenticationManager(){
         return new ProviderManager(
@@ -86,9 +91,7 @@ public class SecurityConfig {
 //                .authorizeHttpRequests().requestMatchers("/**")
 //
                 .authorizeHttpRequests((requests) -> requests
-                                .requestMatchers("/doc.html","/swagger/**","/swagger-ui.html","/swagger-resources/**",
-                                        "/webjars/**", "/v2/**","/v2/api-docs-ext/**","/v3/api-docs/**",
-                                        "/register","/common/**","/test/**").permitAll()
+                                .requestMatchers(WHITE_LIST.toArray(new String[0])).permitAll()
                                 .anyRequest().authenticated()
 //                        .requestMatchers(new AntPathRequestMatcher()).permitAll()//放行
 //                        .anyRequest().authenticated()//请求都要认证
@@ -103,19 +106,22 @@ public class SecurityConfig {
                                 authenticationManager(),
                                 authenticationSuccessHandler,
                                 authenticationFailureHandler,
-                                applicationEventPublisher),
+                                applicationEventPublisher,
+                                myAuthenticationDetailsSource),
                         UsernamePasswordAuthenticationFilter.class)// 开启短信登录认证过滤器
 
                 .addFilterBefore(new UsernamePasswordLoginFilter(
                                 authenticationManager(),
                                 authenticationSuccessHandler,
                                 authenticationFailureHandler,
-                                applicationEventPublisher),
+                                applicationEventPublisher,
+                                myAuthenticationDetailsSource),
                         UsernamePasswordAuthenticationFilter.class)// 开启账号登录认证流程过滤器
 
 
                 .logout(logout -> logout
-                        .logoutUrl("/logout")
+                        .logoutUrl("/common/auth/logout")
+                        .addLogoutHandler(myLogoutHandler)
                         .logoutSuccessHandler(logoutSuccessHandler))// 退出登录处理器 清除redis 中token GET请求
 
                 .exceptionHandling(exceptionHandling -> exceptionHandling

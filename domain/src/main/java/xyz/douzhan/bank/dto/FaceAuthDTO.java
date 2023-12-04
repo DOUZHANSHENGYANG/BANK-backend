@@ -1,5 +1,6 @@
 package xyz.douzhan.bank.dto;
 
+import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import lombok.Getter;
 
@@ -12,9 +13,10 @@ import lombok.Getter;
  * @since JDK 17
  */
 @Data
+@Schema(description = "人脸认证DTO")
 public class FaceAuthDTO {
-    //姓名
+    @Schema(description = "姓名")
     private String name;
-    //身份证号
+    @Schema(description = "身份证号")
     private String ICNum;
 }

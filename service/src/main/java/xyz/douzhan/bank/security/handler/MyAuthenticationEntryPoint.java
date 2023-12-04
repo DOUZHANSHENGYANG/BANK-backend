@@ -23,7 +23,6 @@ import java.io.IOException;
 public class MyAuthenticationEntryPoint implements AuthenticationEntryPoint {
     @Override
     public void commence(HttpServletRequest request, HttpServletResponse response, AuthenticationException authException) throws IOException, ServletException {
-        authException.printStackTrace();
         Result result = Result.error().message("认证异常" + authException.getMessage());
         HttpUtils.sendMessage(response,result);
     }
