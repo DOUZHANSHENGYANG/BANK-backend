@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
 @Mapper
 public interface TransactionMapper extends BaseMapper<Transaction> {

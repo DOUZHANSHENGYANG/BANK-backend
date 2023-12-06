@@ -1,6 +1,5 @@
 package xyz.douzhan.bank.security.handler;
 
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.security.core.Authentication;
@@ -15,7 +14,6 @@ import xyz.douzhan.bank.utils.RedisUtils;
 
 import java.io.IOException;
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,13 +29,13 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
 
 
     @Override
-    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException, ServletException {
+    public void onAuthenticationSuccess(HttpServletRequest request, HttpServletResponse response, Authentication authentication) throws IOException {
         CustomUserDetails userDetails = (CustomUserDetails) authentication.getPrincipal();
 
-        String token = JWTUtils.genToken(String.valueOf(userDetails.getSafeId()));
+        String token = JWTUtils.genToken(String.valueOf(userDetails.getPhoneAccountId()));
 
         JWTUserRedis jwtUserRedis = new JWTUserRedis()
-                        .safeId(userDetails.getSafeId())
+                        .phoneAccountId(userDetails.getPhoneAccountId())
                         .authorities(userDetails.getAuthorities())
                         .loginIp(HttpUtils.getRemoteHostIP(request))
                         .loginTime(LocalDateTime.now())

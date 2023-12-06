@@ -1,8 +1,8 @@
 package xyz.douzhan.bank.service.impl;
 
-import xyz.douzhan.bank.po.BankCard;
-import xyz.douzhan.bank.mapper.BankCardMapper;
-import xyz.douzhan.bank.service.BankCardService;
+import xyz.douzhan.bank.po.PhonePayer;
+import xyz.douzhan.bank.mapper.PhonePayerMapper;
+import xyz.douzhan.bank.service.PhonePayerService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
 
@@ -15,6 +15,6 @@ import org.springframework.stereotype.Service;
  * @since 2023-12-06
  */
 @Service
-public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, BankCard> implements BankCardService {
+public class PhonePayerServiceImpl extends ServiceImpl<PhonePayerMapper, PhonePayer> implements PhonePayerService {
 
 }

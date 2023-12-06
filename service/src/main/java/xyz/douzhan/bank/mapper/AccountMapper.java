@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.mapper;
 
-import xyz.douzhan.bank.po.Safe;
+import xyz.douzhan.bank.po.Account;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -10,9 +10,9 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
 @Mapper
-public interface SafeMapper extends BaseMapper<Safe> {
+public interface AccountMapper extends BaseMapper<Account> {
 
 }

@@ -5,20 +5,23 @@
     <!-- 通用查询映射结果 -->
     <resultMap id="BaseResultMap" type="xyz.douzhan.bank.po.User">
         <id column="id" property="id" />
-        <id column="card_type" property="cardType" />
         <result column="name" property="name" />
-        <result column="status" property="status" />
-        <result column="card_num" property="cardNum" />
+        <result column="pin_yin" property="pinYin" />
         <result column="gender" property="gender" />
-        <result column="avatar" property="avatar" />
+        <result column="card_type" property="cardType" />
+        <result column="card_num" property="cardNum" />
+        <result column="card_start_date" property="cardStartDate" />
+        <result column="card_exp_date" property="cardExpDate" />
         <result column="country" property="country" />
-        <result column="address" property="address" />
         <result column="region" property="region" />
         <result column="ethnicity" property="ethnicity" />
-        <result column="birthday" property="birthday" />
-        <result column="birthplace" property="birthplace" />
         <result column="profession" property="profession" />
+        <result column="phone_number" property="phoneNumber" />
         <result column="organization" property="organization" />
+        <result column="address" property="address" />
+        <result column="marital_status" property="maritalStatus" />
+        <result column="family_status" property="familyStatus" />
+        <result column="personal_photo" property="personalPhoto" />
         <result column="update_time" property="updateTime" />
         <result column="create_time" property="createTime" />
     </resultMap>

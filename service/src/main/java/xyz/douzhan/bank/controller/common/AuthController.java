@@ -13,6 +13,7 @@ import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
+import xyz.douzhan.bank.dto.FaceAuthDTO;
 import xyz.douzhan.bank.dto.LoginDTO;
 import xyz.douzhan.bank.enums.VerifyCodeType;
 import xyz.douzhan.bank.result.Result;
@@ -34,8 +35,16 @@ import java.util.concurrent.TimeUnit;
 @RestController
 @RequestMapping("/common/auth")
 @Validated
-@PreAuthorize("hasRole('ROLE_USER')")
+@PreAuthorize("hasRole('USER')")
 public class AuthController {
+
+    @PostMapping("/face")
+    @Operation(summary = "人脸认证")
+    public Result faceAuth(@RequestBody @Validated FaceAuthDTO faceAuthDTO){
+
+        //TODO 接入人脸识别
+        return Result.success();
+    }
     @GetMapping("/vc")
     @Operation(summary = "根据类型获取验证码")
     public Result getVerifyCode(

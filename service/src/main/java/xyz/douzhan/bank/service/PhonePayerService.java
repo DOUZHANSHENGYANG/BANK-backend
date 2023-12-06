@@ -1,7 +1,7 @@
 package xyz.douzhan.bank.service;
 
+import xyz.douzhan.bank.po.PhonePayer;
 import com.baomidou.mybatisplus.extension.service.IService;
-import xyz.douzhan.bank.po.Transfer;
 
 /**
  * <p>
@@ -9,8 +9,8 @@ import xyz.douzhan.bank.po.Transfer;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
-public interface TransferService extends IService<Transfer> {
+public interface PhonePayerService extends IService<PhonePayer> {
 
 }

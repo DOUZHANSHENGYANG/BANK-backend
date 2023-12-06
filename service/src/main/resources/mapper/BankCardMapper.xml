@@ -6,13 +6,17 @@
     <resultMap id="BaseResultMap" type="xyz.douzhan.bank.po.BankCard">
         <id column="id" property="id" />
         <result column="user_id" property="userId" />
+        <result column="account_id" property="accountId" />
+        <result column="account_type" property="accountType" />
         <result column="type" property="type" />
-        <result column="number" property="number" />
-        <result column="alias" property="alias" />
-        <result column="money" property="money" />
         <result column="status" property="status" />
-        <result column="create_time" property="createTime" />
+        <result column="number" property="number" />
+        <result column="money" property="money" />
+        <result column="alias" property="alias" />
+        <result column="times" property="times" />
+        <result column="locked_time" property="lockedTime" />
         <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
     </resultMap>
 
 </mapper>

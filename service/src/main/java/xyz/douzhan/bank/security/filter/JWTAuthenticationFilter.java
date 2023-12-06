@@ -5,13 +5,11 @@ import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.web.filter.OncePerRequestFilter;
-import xyz.douzhan.bank.po.Safe;
+import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.security.handler.MyAuthenticationException;
 import xyz.douzhan.bank.security.user.JWTUserRedis;
 import xyz.douzhan.bank.security.user.MyAuthenticationDetails;
@@ -20,11 +18,7 @@ import xyz.douzhan.bank.utils.RedisUtils;
 import xyz.douzhan.bank.utils.SecurityUtils;
 
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 /**
  * 一些声明信息
@@ -63,7 +57,7 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
         //4.从缓存尝试获取token
         JWTUserRedis userRedis = (JWTUserRedis) RedisUtils.get("user:jwt:" + token);
 
-        Long safeId=null;
+        Long phoneAccountId=null;
         if (userRedis==null){
             //4.1 获取不到，尝试解析token
             try{
@@ -71,19 +65,19 @@ public class JWTAuthenticationFilter extends OncePerRequestFilter {
             }catch (Exception e){
                 throw new MyAuthenticationException(e.getMessage());
             }
-            safeId  = (Long) JWTUtils.parseToken(token);
+            phoneAccountId  = (Long) JWTUtils.parseToken(token);
         }else {
 
-            safeId=userRedis.safeId();
+            phoneAccountId=userRedis.phoneAccountId();
         }
         //4.2 根据id查询用户信息
-        Safe safe = Db.lambdaQuery(Safe.class).eq(Safe::getUsername, safeId).one();
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getUsername, phoneAccountId).one();
 
         //4.3 获取权限
-        List<SimpleGrantedAuthority> authorities = SecurityUtils.getAuthorities(safe.getRole());
+        List<SimpleGrantedAuthority> authorities = SecurityUtils.getAuthorities(phoneAccount.getRole());
         //4.4 构造token
         UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(
-                safe.getUsername(), null, authorities);
+                phoneAccount.getUsername(), null, authorities);
         //4.5 更新安全上下文的持有用户,通过验证
         authenticationToken.setDetails(new MyAuthenticationDetails(request));
         SecurityContextHolder.getContext().setAuthentication(authenticationToken);

@@ -9,10 +9,10 @@ import org.springframework.web.bind.annotation.RestController;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
 @RestController
-@RequestMapping("/test/feedback")
-public class FeedbackController {
+@RequestMapping("/test/phone-payer")
+public class PhonePayerController {
 
 }

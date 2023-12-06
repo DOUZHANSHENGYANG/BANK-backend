@@ -1,8 +1,8 @@
 package xyz.douzhan.bank.mapper;
 
+import xyz.douzhan.bank.po.PhoneFeedback;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
-import xyz.douzhan.bank.po.PayerInfo;
 
 /**
  * <p>
@@ -10,9 +10,9 @@ import xyz.douzhan.bank.po.PayerInfo;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
 @Mapper
-public interface PayerInfoMapper extends BaseMapper<PayerInfo> {
+public interface PhoneFeedbackMapper extends BaseMapper<PhoneFeedback> {
 
 }

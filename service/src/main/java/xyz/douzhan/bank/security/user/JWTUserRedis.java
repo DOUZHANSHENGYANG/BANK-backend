@@ -25,9 +25,9 @@ import java.util.Date;
 @Accessors(fluent = true,chain = true)
 public class JWTUserRedis implements Serializable {
     /**
-     * 安全信息id
+     * 手机账户id
      */
-    private Long safeId;
+    private Long phoneAccountId;
 
     /**
      * 权限集合

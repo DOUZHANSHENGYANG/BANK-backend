@@ -1,23 +1,19 @@
 package xyz.douzhan.bank.security.provider;
 
 import com.baomidou.mybatisplus.extension.toolkit.Db;
+import org.springframework.security.access.method.P;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.AuthenticationException;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.authority.mapping.GrantedAuthoritiesMapper;
 import org.springframework.security.core.authority.mapping.NullAuthoritiesMapper;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import xyz.douzhan.bank.po.Safe;
+import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.security.token.SmsCodeAuthenticationToken;
 import xyz.douzhan.bank.security.user.CustomUserDetails;
 import xyz.douzhan.bank.utils.SecurityUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 
 /**
@@ -77,11 +73,11 @@ public class SMSCodeAuthenticationProvider implements AuthenticationProvider {
      * @throws UsernameNotFoundException
      */
     public UserDetails loadUserByMobile(String mobile) throws UsernameNotFoundException {
-        Safe safe = Db.lambdaQuery(Safe.class).eq(Safe::getTel, mobile).one();
-        if (safe == null) {
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getTel, mobile).one();
+        if (phoneAccount == null) {
             throw new UsernameNotFoundException("该手机号不存在");
         }
 
-        return new CustomUserDetails(safe, SecurityUtils.getAuthorities(safe.getRole()));
+        return new CustomUserDetails(phoneAccount, SecurityUtils.getAuthorities(phoneAccount.getRole()));
     }
 }

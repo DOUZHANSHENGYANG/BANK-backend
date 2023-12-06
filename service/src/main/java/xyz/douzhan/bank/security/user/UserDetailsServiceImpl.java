@@ -2,17 +2,12 @@ package xyz.douzhan.bank.security.user;
 
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
-import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
-import xyz.douzhan.bank.po.Safe;
+import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.utils.SecurityUtils;
-
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 /**
  * 一些声明信息
@@ -29,11 +24,11 @@ public class UserDetailsServiceImpl implements UserDetailsService {
     @Override
     public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
         //根据用户名查询安全信息
-        Safe safe= Db.lambdaQuery(Safe.class).eq(StrUtil.isNotEmpty(username),Safe::getUsername,username).one();
-        if (safe==null){
+        PhoneAccount phoneAccount= Db.lambdaQuery(PhoneAccount.class).eq(StrUtil.isNotEmpty(username),PhoneAccount::getUsername,username).one();
+        if (phoneAccount==null){
             throw new UsernameNotFoundException("该用户不存在");
         }
-        return new CustomUserDetails(safe, SecurityUtils.getAuthorities(safe.getRole()));
+        return new CustomUserDetails(phoneAccount, SecurityUtils.getAuthorities(phoneAccount.getRole()));
 
     }
 }

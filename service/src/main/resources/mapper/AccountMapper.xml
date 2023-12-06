@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="xyz.douzhan.bank.mapper.AccountMapper">
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="xyz.douzhan.bank.po.Account">
+        <id column="id" property="id" />
+        <result column="user_id" property="userId" />
+        <result column="identifier" property="identifier" />
+        <result column="status" property="status" />
+        <result column="type" property="type" />
+        <result column="balance" property="balance" />
+        <result column="password" property="password" />
+        <result column="bank_name" property="bankName" />
+        <result column="bank_address" property="bankAddress" />
+        <result column="institution_code" property="institutionCode" />
+        <result column="update_time" property="updateTime" />
+        <result column="create_time" property="createTime" />
+        <result column="account_id" property="accountId" />
+        <result column="entity_card" property="entityCard" />
+    </resultMap>
+
+</mapper>

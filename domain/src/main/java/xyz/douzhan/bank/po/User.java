@@ -1,68 +1,112 @@
 package xyz.douzhan.bank.po;
 
 import com.baomidou.mybatisplus.annotation.IdType;
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
-import lombok.Builder;
-import lombok.Data;
-import org.springframework.cglib.core.Local;
-import xyz.douzhan.bank.enums.CardType;
-import xyz.douzhan.bank.enums.Gender;
-import xyz.douzhan.bank.enums.UserStatus;
 
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Getter;
+import lombok.Setter;
 
 /**
- * 一些声明信息
- * Description:
- * date: 2023/11/24 19:41
+ * <p>
+ * 
+ * </p>
  *
  * @author 斗战圣洋
- * @since JDK 17
+ * @since 2023-12-06
  */
-@Data
-@Builder
+@Getter
+@Setter
 @TableName("user")
+@Schema(description ="User对象")
 public class User implements Serializable {
-    @Serial
-    private static final long serialVersionUID=1L;
-    //主键
-    @TableId(type = IdType.AUTO)
-    private Long id;
-    //名字
-    private String name;
-    //账户状态 0正常1冻结2注销
-    private UserStatus status;
-    //证件类型 0身份证1护照2外国人永久居留身份证3港澳居民居住证4台湾居民居住证
-    private CardType cardType;
-    //证件号
-    private String cardNum;
-    //性别 0男1女
-    private Gender gender;
-    //头像url
-    private String avatar;
-    //民族
-    private String ethnicity;
-    //生日
-    private LocalDate birthday;
-    //出生地
-    private String birthplace;
-    //国家
-    private String country;
-    //地区
-    private String region;
-    //地址
-    private String address;
-    //职业
-    private String profession;
-    //组织单位
-    private String organization;
-    //更新时间
-    private LocalDateTime updateTime;
-    //创建时间
-    private LocalDateTime createTime;
 
+    @Serial
+    private static final long serialVersionUID = 1L;
+
+    @Schema(description = "个人信息id")
+    @TableId(value = "id", type = IdType.AUTO)
+    private Long id;
+
+    @Schema(description = "姓名")
+    @TableField("name")
+    private String name;
+
+    @Schema(description = "姓名拼音")
+    @TableField("pin_yin")
+    private String pinYin;
+
+    @Schema(description = "性别(0男1女)")
+    @TableField("gender")
+    private String gender;
+
+    @Schema(description = "证件类型（0代表身份证）")
+    @TableField("card_type")
+    private String cardType;
+
+    @Schema(description = "证件号码")
+    @TableField("card_num")
+    private String cardNum;
+
+    @Schema(description = "证件起始日")
+    @TableField("card_start_date")
+    private LocalDate cardStartDate;
+
+    @Schema(description = "证件到期日")
+    @TableField("card_exp_date")
+    private LocalDate cardExpDate;
+
+    @Schema(description = "国家/地区")
+    @TableField("country")
+    private String country;
+
+    @Schema(description = "省/市/区")
+    @TableField("region")
+    private String region;
+
+    @Schema(description = "民族")
+    @TableField("ethnicity")
+    private String ethnicity;
+
+    @Schema(description = "职业")
+    @TableField("profession")
+    private String profession;
+
+    @Schema(description = "手机号码 联系方式 	大部分国家的手机号码通常是10到12位数。	美国和加拿大的手机号是10位数，中国的手机号是11位数，英国的手机号是11位数。")
+    @TableField("phone_number")
+    private String phoneNumber;
+
+    @Schema(description = "工作单位/学校")
+    @TableField("organization")
+    private String organization;
+
+    @Schema(description = "详细地址（住所细化到门牌栋号）")
+    @TableField("address")
+    private String address;
+
+    @Schema(description = "婚姻状况 0未婚1已婚 ")
+    @TableField("marital_status")
+    private String maritalStatus;
+
+    @Schema(description = "家庭状况 不得超过200字")
+    @TableField("family_status")
+    private String familyStatus;
+
+    @Schema(description = "个人照片 url 网络存储")
+    @TableField("personal_photo")
+    private String personalPhoto;
+
+    @Schema(description = "创建时间")
+    @TableField("update_time")
+    private LocalDateTime updateTime;
+
+    @Schema(description = "更新时间")
+    @TableField("create_time")
+    private LocalDateTime createTime;
 }

@@ -1,8 +1,7 @@
 package xyz.douzhan.bank.service;
 
-
+import xyz.douzhan.bank.po.PhoneFeedback;
 import com.baomidou.mybatisplus.extension.service.IService;
-import xyz.douzhan.bank.po.Safe;
 
 /**
  * <p>
@@ -10,8 +9,8 @@ import xyz.douzhan.bank.po.Safe;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-03
+ * @since 2023-12-06
  */
-public interface SafeService extends IService<Safe> {
+public interface PhoneFeedbackService extends IService<PhoneFeedback> {
 
 }

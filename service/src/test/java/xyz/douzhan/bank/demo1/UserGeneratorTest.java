@@ -17,14 +17,15 @@ public class UserGeneratorTest {
     @Test
     public void testGen() {
         List<String> tables = new ArrayList<>();
-        tables.add("admin");
+        tables.add("account");
         tables.add("bank_card");
         tables.add("feedback");
-        tables.add("payer_info");
-        tables.add("safe");
         tables.add("transaction");
-        tables.add("transfer");
         tables.add("user");
+        tables.add("phone_feedback");
+        tables.add("phone_account");
+        tables.add("phone_payer");
+        tables.add("bank_phone_bank");
 
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/bank", "root", "1234")
                 .globalConfig(builder -> {
