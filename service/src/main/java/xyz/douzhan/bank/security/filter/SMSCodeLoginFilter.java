@@ -36,11 +36,13 @@ import java.io.IOException;
  */
 
 public class SMSCodeLoginFilter extends AbstractAuthenticationProcessingFilter {
-    public static final String SPRING_SECURITY_MOBILE_KEY = "mobile";
+    public static final String SPRING_SECURITY_MOBILE_KEY = "phoneNumber";
     public static final String SPRING_SECURITY_CODE_KEY = "smsCode";
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/common/auth/login/mobile", "POST");
+    public static final String LOGIN_TYPE = "type";
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/mobile/account/login/sms", "POST");
     private final String mobileParameter = SPRING_SECURITY_MOBILE_KEY;
     private final String codeParameter = SPRING_SECURITY_CODE_KEY;
+    public static final String typeParameter = LOGIN_TYPE;
 
     private final boolean postOnly = true;
 
@@ -66,17 +68,24 @@ public class SMSCodeLoginFilter extends AbstractAuthenticationProcessingFilter {
         if (!request.getContentType().contains(MediaType.APPLICATION_JSON.toString())){
             throw new AuthenticationServiceException("认证参数不支持");
         }
-        //获取手机号和验证码
+
+
         String body = HttpUtils.getBody(request);
         JSONObject jsonObject = JSON.parseObject(body);
+        //判断类型是否为手机号验证码登录
+        String type= jsonObject.getString(typeParameter);
+        if (type==null){
+            throw new AuthenticationServiceException("认证参数不支持");
+        }
+        if (Integer.parseInt(type)!=0){
+            throw new AuthenticationServiceException("认证参数不支持");
+        }
+        //获取手机号和验证码
         String mobile = jsonObject.getString(mobileParameter);
         String code = jsonObject.getString(codeParameter);
 
-        if (mobile==null){
-            mobile="";
-        }
-        if (code==null){
-            code="";
+        if (StrUtil.isEmpty(mobile)||StrUtil.isEmpty(code)){
+            throw new AuthenticationServiceException("认证参数不支持");
         }
 
         String redisCode = (String) RedisUtils.get("user:mobile:"+mobile);

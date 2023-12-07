@@ -2,6 +2,8 @@ package xyz.douzhan.bank.utils;
 
 import cn.hutool.captcha.AbstractCaptcha;
 import cn.hutool.captcha.CaptchaUtil;
+import cn.hutool.captcha.LineCaptcha;
+import cn.hutool.captcha.generator.RandomGenerator;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Component;
@@ -38,6 +40,13 @@ public class VerifyCodeUtils {
             case LINE: yield CaptchaUtil.createLineCaptcha(200, 100);
             case CIRCLE: yield CaptchaUtil.createCircleCaptcha(200, 100, 4, 20);
             case SHEAR: yield CaptchaUtil.createShearCaptcha(200, 100, 4, 4);
+            case PURENUM: {
+                // 自定义纯数字的验证码（随机4位数字，可重复）
+                RandomGenerator randomGenerator = new RandomGenerator("0123456789", 6);
+                LineCaptcha lineCaptcha = CaptchaUtil.createLineCaptcha(200, 100);
+                lineCaptcha.setGenerator(randomGenerator);
+                yield lineCaptcha;
+            }
         };
     }
 }

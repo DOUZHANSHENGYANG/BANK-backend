@@ -1,7 +1,10 @@
 package xyz.douzhan.bank.security.user;
 
 import cn.hutool.core.collection.CollUtil;
+import com.alibaba.fastjson2.JSON;
+import com.alibaba.fastjson2.JSONObject;
 import jakarta.servlet.http.HttpServletRequest;
+import xyz.douzhan.bank.utils.HttpUtils;
 
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -17,19 +20,25 @@ import java.util.Map;
  */
 public class MyAuthenticationDetails {
 
-    private Map<String, String> headers;
+    private Map<String, String> info;
 
     public MyAuthenticationDetails(HttpServletRequest request) {
-        this.headers = new HashMap<>();
+        this.info = new HashMap<>();
         //在构造函数中获取并存储请求头信息
         Enumeration<String> authorization = request.getHeaders("Authorization");
         if (!CollUtil.isEmpty(authorization)) {
-            headers.put("Authorization", authorization.nextElement());
+            info.put("Authorization", authorization.nextElement());
         }
+//        //在构造函数中尝试获取并存储请求体部分信息
+//        String body = HttpUtils.getBody(request);
+//        JSONObject jsonObject = JSON.parseObject(body);
+//        if (jsonObject != null) {
+//            info.put("type",jsonObject.getString("type"));
+//        }
     }
 
-    public Map<String, String> getHeaders() {
-        return headers;
+    public Map<String, String> getInfo() {
+        return info;
     }
 
 }

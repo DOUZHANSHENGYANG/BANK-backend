@@ -5,6 +5,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import xyz.douzhan.bank.result.Result;
 
+
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.PrintWriter;
@@ -26,7 +27,7 @@ public class HttpUtils {
      * @param result
      * @throws IOException
      */
-    public static void sendMessage(HttpServletResponse response,Result result) throws IOException {
+    public static void sendMessage(HttpServletResponse response, Result result) throws IOException {
         response.setContentType("application/json; charset=utf-8");
         String jsonResult = JSON.toJSONString(result);
         PrintWriter writer = response.getWriter();

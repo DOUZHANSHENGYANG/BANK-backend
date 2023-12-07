@@ -21,7 +21,7 @@ public class Knife4jConfig {
 
 
     @Bean
-    public OpenAPI openAPI(){
+    public OpenAPI openAPI() {
         return new OpenAPI()
                 .info(new Info()
                         .title("Bank 接口文档")
@@ -32,6 +32,15 @@ public class Knife4jConfig {
                 );
 
     }
+
+    @Bean
+    public GroupedOpenApi clientApi() {
+        return GroupedOpenApi.builder()
+                .group("bank-client")
+                .pathsToMatch("/bank/**")
+                .build();
+    }
+
     @Bean
     public GroupedOpenApi commonApi() {
         return GroupedOpenApi.builder()
@@ -40,13 +49,7 @@ public class Knife4jConfig {
                 .build();
     }
 
-    @Bean
-    public GroupedOpenApi clientApi() {
-        return GroupedOpenApi.builder()
-                .group("bank-client")
-                .pathsToMatch("/client/**")
-                .build();
-    }
+
     @Bean
     public GroupedOpenApi adminApi() {
         return GroupedOpenApi.builder()
@@ -62,7 +65,6 @@ public class Knife4jConfig {
                 .pathsToMatch("/test/**")
                 .build();
     }
-
 
 
 //    @Bean

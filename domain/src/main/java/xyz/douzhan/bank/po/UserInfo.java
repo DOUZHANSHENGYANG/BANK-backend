@@ -1,9 +1,6 @@
 package xyz.douzhan.bank.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -23,9 +20,9 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("user")
-@Schema(description ="User对象")
-public class User implements Serializable {
+@TableName("user_info")
+@Schema(description ="UserInfo对象")
+public class UserInfo implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -78,7 +75,7 @@ public class User implements Serializable {
     @TableField("profession")
     private String profession;
 
-    @Schema(description = "手机号码 联系方式 	大部分国家的手机号码通常是10到12位数。	美国和加拿大的手机号是10位数，中国的手机号是11位数，英国的手机号是11位数。")
+    @Schema(description = "开户手机号码 联系方式 	大部分国家的手机号码通常是10到12位数。	美国和加拿大的手机号是10位数，中国的手机号是11位数，英国的手机号是11位数。")
     @TableField("phone_number")
     private String phoneNumber;
 
@@ -103,10 +100,10 @@ public class User implements Serializable {
     private String personalPhoto;
 
     @Schema(description = "创建时间")
-    @TableField("update_time")
+    @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "更新时间")
-    @TableField("create_time")
+    @TableField(value = "create_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime createTime;
 }

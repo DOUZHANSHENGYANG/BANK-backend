@@ -38,7 +38,7 @@ import java.io.IOException;
  */
 
 public class UsernamePasswordLoginFilter extends UsernamePasswordAuthenticationFilter {
-    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/common/auth/login/up", "POST");
+    private static final AntPathRequestMatcher DEFAULT_ANT_PATH_REQUEST_MATCHER = new AntPathRequestMatcher("/mobile/account/login/up", "POST");
 
     private boolean postOnly=true;
     public UsernamePasswordLoginFilter(AuthenticationManager authenticationManager,
@@ -81,12 +81,14 @@ public class UsernamePasswordLoginFilter extends UsernamePasswordAuthenticationF
             throw new AuthenticationServiceException("认证方法不支持: " + request.getMethod());
         }
         if (!request.getContentType().contains(MediaType.APPLICATION_JSON.toString())){
-            throw new AuthenticationServiceException("认证参数不支持: " + request.getMethod());
+            throw new AuthenticationServiceException("认证参数不支持");
         }
-        //首先获取用户验证码
+
+
+        //解析请求体
         String body = HttpUtils.getBody(request);
         JSONObject jsonObject = JSON.parseObject(body);
-
+        //首先获取用户验证码
         String uuid = jsonObject.getString("uuid");
         String imgCode = jsonObject.getString("imgCode");
         //从redis查询先前生成的验证码
@@ -101,11 +103,29 @@ public class UsernamePasswordLoginFilter extends UsernamePasswordAuthenticationF
         if (StrUtil.isEmpty(imgCode)||!StrUtil.equals(imgCode,redisImgCode,false)){
             throw new MyAuthenticationException("验证码不正确");
         }
+        //先获取类型
+        String type = jsonObject.getString("type");
+        if (type==null){
+            throw new AuthenticationServiceException("认证参数不支持");
+        }
         //验证码通过再获取用户名和密码
-        String username = jsonObject.getString("username");
-        String password = jsonObject.getString("password");
+        String username=null;
+        String password=null;
+        //根据类型判断
+        if (StrUtil.equals(type,"1")){
+             username = jsonObject.getString("phoneNumber");
+             password = jsonObject.getString("password");
+        }else if (StrUtil.equals(type,"2")){
+             username = jsonObject.getString("documentsNumber");
+             password = jsonObject.getString("password");
+        }else {
+            throw new AuthenticationServiceException("认证参数不支持" );
+        }
+       if (StrUtil.isEmpty(username)||StrUtil.isEmpty(password)){
+           throw new AuthenticationServiceException("认证参数不支持");
+       }
         //封装JwtAuthenticationToken交给manager验证
-        JwtAuthenticationToken authRequest = new JwtAuthenticationToken(username.trim(), password);
+        JwtAuthenticationToken authRequest = new JwtAuthenticationToken(username.trim()+type, password);
         setDetails(request,authRequest);
         return this.getAuthenticationManager().authenticate(authRequest);
     }

@@ -1,26 +1,14 @@
 package xyz.douzhan.bank.security.handler;
 
-import cn.hutool.core.collection.CollUtil;
-import cn.hutool.core.util.StrUtil;
-import com.alibaba.fastjson2.JSON;
-import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import org.junit.jupiter.params.shadow.com.univocity.parsers.annotations.Copy;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.web.authentication.logout.LogoutHandler;
 import org.springframework.security.web.authentication.logout.LogoutSuccessHandler;
 import org.springframework.stereotype.Component;
 import xyz.douzhan.bank.result.Result;
-import xyz.douzhan.bank.security.user.MyAuthenticationDetails;
 import xyz.douzhan.bank.utils.HttpUtils;
-import xyz.douzhan.bank.utils.JWTUtils;
-import xyz.douzhan.bank.utils.RedisUtils;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 /**
  * 一些声明信息

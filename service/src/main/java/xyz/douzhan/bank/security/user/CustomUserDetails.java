@@ -17,7 +17,7 @@ import java.util.Collection;
 public class CustomUserDetails extends User {
     private PhoneAccount phoneAccount;
     public CustomUserDetails(PhoneAccount phoneAccount, Collection<? extends GrantedAuthority> authorities) {
-        super(phoneAccount.getUsername(), phoneAccount.getAccountPwd(), authorities);
+        super(phoneAccount.getUsername(), phoneAccount.getAccountPWD(), authorities);
         this.phoneAccount=phoneAccount;
     }
     public Long getPhoneAccountId() {

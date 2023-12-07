@@ -3,6 +3,8 @@ package xyz.douzhan.bank.security.token;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 
 /**
@@ -13,7 +15,8 @@ import java.util.Collection;
  * @author 斗战圣洋
  * @since JDK 17
  */
-public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken {
+public class JwtAuthenticationToken extends UsernamePasswordAuthenticationToken implements Serializable {
+    @Serial
     private static final long serialVersionUID=1L;
     private String token;
     public JwtAuthenticationToken(Object principal, Object credentials) {

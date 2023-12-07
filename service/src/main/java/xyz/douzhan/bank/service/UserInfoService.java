@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.service;
 
-import xyz.douzhan.bank.po.User;
+import xyz.douzhan.bank.po.UserInfo;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -11,6 +11,6 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @author 斗战圣洋
  * @since 2023-12-06
  */
-public interface UserService extends IService<User> {
+public interface UserInfoService extends IService<UserInfo> {
 
 }

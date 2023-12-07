@@ -23,5 +23,7 @@ public enum VerifyCodeType
     //圆圈干扰验证码
     CIRCLE,
     //扭曲干扰验证码
-    SHEAR;
+    SHEAR,
+    //自定义纯数字验证码
+    PURENUM;
 }

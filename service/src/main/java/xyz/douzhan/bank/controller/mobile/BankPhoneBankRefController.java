@@ -1,4 +1,4 @@
-package xyz.douzhan.bank.controller;
+package xyz.douzhan.bank.controller.mobile;
 
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023-12-06
  */
 @RestController
-@RequestMapping("/test/user")
-public class UserController {
+@RequestMapping("/bank")
+public class BankPhoneBankRefController {
 
 }

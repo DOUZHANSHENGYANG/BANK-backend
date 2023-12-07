@@ -13,19 +13,19 @@ import java.util.Collections;
 import java.util.List;
 
 @SpringBootTest
-public class UserGeneratorTest {
+public class UserInfoGeneratorTest {
     @Test
     public void testGen() {
         List<String> tables = new ArrayList<>();
-        tables.add("account");
-        tables.add("bank_card");
-        tables.add("feedback");
-        tables.add("transaction");
-        tables.add("user");
-        tables.add("phone_feedback");
-        tables.add("phone_account");
-        tables.add("phone_payer");
-        tables.add("bank_phone_bank");
+//        tables.add("account");
+//        tables.add("bank_card");
+//        tables.add("feedback");
+//        tables.add("transaction");
+//        tables.add("user");
+//        tables.add("phone_feedback");
+//        tables.add("phone_account");
+//        tables.add("phone_payer");
+        tables.add("bank_phone_bank_ref");
 
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/bank", "root", "1234")
                 .globalConfig(builder -> {

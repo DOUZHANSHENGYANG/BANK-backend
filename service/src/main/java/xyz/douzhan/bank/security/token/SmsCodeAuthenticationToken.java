@@ -3,6 +3,8 @@ package xyz.douzhan.bank.security.token;
 import org.springframework.security.authentication.AbstractAuthenticationToken;
 import org.springframework.security.core.GrantedAuthority;
 
+import java.io.Serial;
+import java.io.Serializable;
 import java.util.Collection;
 import java.util.Collections;
 
@@ -14,8 +16,8 @@ import java.util.Collections;
  * @author 斗战圣洋
  * @since JDK 17
  */
-public class SmsCodeAuthenticationToken extends AbstractAuthenticationToken {
-
+public class SmsCodeAuthenticationToken extends AbstractAuthenticationToken implements Serializable {
+    @Serial
     private static final long serialVersionUID = 1L;
     private final Object principal;
     private Object credentials;

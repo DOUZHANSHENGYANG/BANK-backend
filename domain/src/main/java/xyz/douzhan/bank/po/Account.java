@@ -1,9 +1,6 @@
 package xyz.douzhan.bank.po;
 
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
-import com.baomidou.mybatisplus.annotation.TableName;
+import com.baomidou.mybatisplus.annotation.*;
 
 import java.io.Serial;
 import java.io.Serializable;
@@ -14,7 +11,7 @@ import lombok.Setter;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author 斗战圣洋
@@ -57,6 +54,10 @@ public class Account implements Serializable {
     @TableField("password")
     private String password;
 
+    @Schema(description = "预留手机号")
+    @TableField("phone_number")
+    private String phoneNumber;
+
     @Schema(description = "开户行名称 例如（中国建议银行深圳（分行）南山支行）")
     @TableField("bank_name")
     private String bankName;
@@ -70,18 +71,14 @@ public class Account implements Serializable {
     private String institutionCode;
 
     @Schema(description = "银行账户变动最新时间")
-    @TableField("update_time")
+    @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "银行账户开立时间")
-    @TableField("create_time")
+    @TableField(value = "create_time",fill = FieldFill.INSERT)
     private LocalDateTime createTime;
 
     @Schema(description = "若为 II 类 可选绑定I类账户   III 类账户 必须绑定I类 手机银行都要绑定I类")
     @TableField("account_id")
     private Integer accountId;
-
-    @Schema(description = "是否有实体卡 0为没有 1为有 I II类有实体卡 总和不得超过4张")
-    @TableField("entity_card")
-    private String entityCard;
 }

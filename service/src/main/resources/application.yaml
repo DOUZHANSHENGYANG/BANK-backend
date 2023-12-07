@@ -68,15 +68,21 @@ springdoc:
     - group: 'default'
       paths-to-match: '/**'
       packages-to-scan:
+        - xyz.douzhan.bank.controller
         - xyz.douzhan.bank.controller.common
-        - xyz.douzhan.bank.controller.client
-        - xyz.douzhan.bank.controller.admin
         - xyz.douzhan.bank.test
+        - xyz.douzhan.bank.po
+        - xyz.douzhan.bank.vo
+        - xyz.douzhan.bank.dto
+        - xyz.douzhan.bank.result
   packages-to-scan:
+    - xyz.douzhan.bank.controller
     - xyz.douzhan.bank.controller.common
-    - xyz.douzhan.bank.controller.client
-    - xyz.douzhan.bank.controller.admin
     - xyz.douzhan.bank.test
+    - xyz.douzhan.bank.po
+    - xyz.douzhan.bank.vo
+    - xyz.douzhan.bank.dto
+    - xyz.douzhan.bank.result
   show-actuator: true
 # knife4j的增强配置，不需要增强可以不配
 knife4j:

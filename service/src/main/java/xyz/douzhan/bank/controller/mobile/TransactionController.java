@@ -1,5 +1,6 @@
-package xyz.douzhan.bank.controller;
+package xyz.douzhan.bank.controller.mobile;
 
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
  * @since 2023-12-06
  */
 @RestController
-@RequestMapping("/test/phone-feedback")
-public class PhoneFeedbackController {
+@RequestMapping("/bank/transaction")
+//@PreAuthorize("hasRole('USER')")
+public class TransactionController {
 
 }

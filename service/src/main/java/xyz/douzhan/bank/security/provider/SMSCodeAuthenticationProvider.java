@@ -29,10 +29,10 @@ public class SMSCodeAuthenticationProvider implements AuthenticationProvider {
 
     @Override
     public Authentication authenticate(Authentication authentication) throws AuthenticationException {
-        String mobile = (String) authentication.getPrincipal();
+        String phoneNumber = (String) authentication.getPrincipal();
 
         //根据手机号加载用户
-        UserDetails user = loadUserByMobile(mobile);
+        UserDetails user = loadUserByPhoneNumber(phoneNumber);
 
         return createSuccessAuthentication(user, authentication, user);
     }
@@ -68,12 +68,12 @@ public class SMSCodeAuthenticationProvider implements AuthenticationProvider {
     /**
      * 获取用户信息
      *
-     * @param mobile
+     * @param phoneNumber
      * @return
      * @throws UsernameNotFoundException
      */
-    public UserDetails loadUserByMobile(String mobile) throws UsernameNotFoundException {
-        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getTel, mobile).one();
+    public UserDetails loadUserByPhoneNumber(String phoneNumber) throws UsernameNotFoundException {
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getPhoneNumber, phoneNumber).one();
         if (phoneAccount == null) {
             throw new UsernameNotFoundException("该手机号不存在");
         }

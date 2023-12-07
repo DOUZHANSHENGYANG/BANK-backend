@@ -2,6 +2,9 @@ package xyz.douzhan.bank.service;
 
 import xyz.douzhan.bank.po.BankCard;
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.douzhan.bank.vo.BankCardVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -13,4 +16,5 @@ import com.baomidou.mybatisplus.extension.service.IService;
  */
 public interface BankCardService extends IService<BankCard> {
 
+    List<BankCardVO> getByPhoneNumber(String phoneNumber, Integer type);
 }

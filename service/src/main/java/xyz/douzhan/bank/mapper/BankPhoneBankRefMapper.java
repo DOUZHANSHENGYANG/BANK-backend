@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.mapper;
 
-import xyz.douzhan.bank.po.User;
+import xyz.douzhan.bank.po.BankPhoneBankRef;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2023-12-06
  */
 @Mapper
-public interface UserMapper extends BaseMapper<User> {
+public interface BankPhoneBankRefMapper extends BaseMapper<BankPhoneBankRef> {
 
 }

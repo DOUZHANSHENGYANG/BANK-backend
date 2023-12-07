@@ -39,7 +39,7 @@ public class MyAuthenticationSuccessHandler implements AuthenticationSuccessHand
                         .authorities(userDetails.getAuthorities())
                         .loginIp(HttpUtils.getRemoteHostIP(request))
                         .loginTime(LocalDateTime.now())
-                        .loginLocation(request.getHeader("User-Agent"));
+                        .loginLocation(request.getHeader("UserInfo-Agent"));
         //放入缓存
         RedisUtils.setWithExpire("user:jwt:"+token,jwtUserRedis,JWTUtils.getJwtProperties().getTtl(), TimeUnit.DAYS);
         //返回结果

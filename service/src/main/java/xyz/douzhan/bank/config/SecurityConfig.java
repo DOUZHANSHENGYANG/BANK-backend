@@ -47,7 +47,7 @@ public class SecurityConfig {
     private static final List<String> WHITE_LIST =
             List.of("/doc.html","/swagger/**","/swagger-ui.html","/swagger-resources/**",
                     "/webjars/**", "/v2/**","/v2/api-docs-ext/**","/v3/api-docs/**",
-                    "/register","/common/**","/test/**");
+                    "/bank/mobile/account/register/**","/common/**","/test/**");
 
     private static final List<String> BLACK_LIST = Collections.emptyList();
 
@@ -89,7 +89,6 @@ public class SecurityConfig {
 //                .httpBasic(AbstractHttpConfigurer::disable)//禁用HTTP Basic认证
                 .formLogin(AbstractHttpConfigurer::disable)//禁用表单登录
 //                .authorizeHttpRequests().requestMatchers("/**")
-//
                 .authorizeHttpRequests((requests) -> requests
                                 .requestMatchers(WHITE_LIST.toArray(new String[0])).permitAll()
                                 .anyRequest().authenticated()
@@ -118,9 +117,8 @@ public class SecurityConfig {
                                 myAuthenticationDetailsSource),
                         UsernamePasswordAuthenticationFilter.class)// 开启账号登录认证流程过滤器
 
-
                 .logout(logout -> logout
-                        .logoutUrl("/common/auth/logout")
+                        .logoutUrl("/bank/mobile/account/logout")
                         .addLogoutHandler(myLogoutHandler)
                         .logoutSuccessHandler(logoutSuccessHandler))// 退出登录处理器 清除redis 中token GET请求
 
