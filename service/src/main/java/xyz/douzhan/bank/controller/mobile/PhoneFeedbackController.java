@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.controller.mobile;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author 斗战圣洋
  * @since 2023-12-06
  */
+@Tag(name="反馈信息")
 @RestController
 @RequestMapping("/bank/mobile/phone-feedback")
 //@PreAuthorize("hasRole('USER')")

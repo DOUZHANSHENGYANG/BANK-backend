@@ -1,14 +1,33 @@
 package xyz.douzhan.bank.utils;
 
 import ch.qos.logback.core.joran.event.BodyEvent;
+import cn.hutool.db.Db;
+import cn.hutool.db.DbUtil;
+import com.aliyun.credentials.provider.EnvironmentVariableCredentialsProvider;
 import com.aliyun.dysmsapi20170525.Client;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
+import com.aliyun.oss.ClientException;
+import com.aliyun.oss.OSS;
+import com.aliyun.oss.OSSClientBuilder;
+import com.aliyun.oss.OSSException;
+import com.aliyun.oss.common.auth.CredentialsProviderFactory;
+import com.aliyun.oss.model.PutObjectRequest;
+import com.aliyun.oss.model.PutObjectResult;
 import com.aliyun.teaopenapi.models.Config;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
+import org.springframework.web.multipart.MultipartFile;
+import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 import xyz.douzhan.bank.properties.AliYunProperties;
 import com.aliyun.tea.*;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.Objects;
+import java.util.UUID;
+
 /**
  * 一些声明信息
  * Description:短信工具类
@@ -18,6 +37,7 @@ import com.aliyun.tea.*;
  * @since JDK 17
  */
 @Component
+@Slf4j
 public class AliYunUtils {
     private static AliYunProperties aliYunProperties;
     public AliYunUtils(AliYunProperties aliYunProperties) throws Exception {
@@ -86,4 +106,61 @@ public class AliYunUtils {
         return new Client(config);
     }
 
+    public static String upload( MultipartFile file) {
+        // Endpoint以华东1（杭州）为例，其它Region请按实际情况填写。
+//        // 从环境变量中获取访问凭证。运行本代码示例之前，请确保已设置环境变量OSS_ACCESS_KEY_ID和OSS_ACCESS_KEY_SECRET。
+//        EnvironmentVariableCredentialsProvider credentialsProvider = CredentialsProviderFactory.newEnvironmentVariableCredentialsProvider();
+//        // 填写Bucket名称，例如examplebucket。
+//        String bucketName = "examplebucket";
+//        // 填写Object完整路径，完整路径中不能包含Bucket名称，例如exampledir/exampleobject.txt。
+//        String objectName = "exampledir/exampleobject.txt";
+
+        // 创建OSSClient实例。
+        OSS ossClient = new OSSClientBuilder().build(aliYunProperties.getOssEndPoint(), aliYunProperties.getAccessKeyID(), aliYunProperties.getAccessKeySecret());
+
+        try {
+//            // 填写字符串。
+//            String content = "Hello OSS，你好世界";
+            //eg: UUID + . + png
+             String fileName = UUID.randomUUID() + "."
+                    + Objects.requireNonNull(file.getContentType()).substring(
+                    file.getContentType().lastIndexOf("/") + 1);    // 创建文件名称
+
+            // 创建PutObjectRequest对象。
+            PutObjectRequest putObjectRequest = new PutObjectRequest(aliYunProperties.getOssBucketName(), fileName, file.getInputStream());
+
+            // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
+            // ObjectMetadata metadata = new ObjectMetadata();
+            // metadata.setHeader(OSSHeaders.OSS_STORAGE_CLASS, StorageClass.Standard.toString());
+            // metadata.setObjectAcl(CannedAccessControlList.Private);
+            // putObjectRequest.setMetadata(metadata);
+
+            // 上传字符串。
+            PutObjectResult result = ossClient.putObject(putObjectRequest);
+
+            return "https://"+aliYunProperties.getOssBucketName()+"."+aliYunProperties.getOssEndPoint()+"/"+fileName;
+        } catch (OSSException oe) {
+            log.error("Caught an OSSException, which means your request made it to OSS, "
+                    + "but was rejected with an error response for some reason.");
+            log.error("Error Message:" + oe.getErrorMessage());
+            log.error("Error Code:" + oe.getErrorCode());
+            log.error("Request ID:" + oe.getRequestId());
+            log.error("Host ID:" + oe.getHostId());
+            throw new ThirdPartyAPIException("阿里云对象存储异常:"+oe.getMessage());
+        } catch (ClientException ce) {
+            log.error("Caught an ClientException, which means the client encountered "
+                    + "a serious internal problem while trying to communicate with OSS, "
+                    + "such as not being able to access the network.");
+            log.error("Error Message:" + ce.getMessage());
+            throw new ThirdPartyAPIException("阿里云对象存储异常:"+ce.getMessage());
+        } catch (IOException e) {
+            log.error(e.getMessage());
+            throw new BizException("前端文件上传异常:"+e.getMessage());
+        } finally {
+            if (ossClient != null) {
+                ossClient.shutdown();
+            }
+        }
+
+    }
 }

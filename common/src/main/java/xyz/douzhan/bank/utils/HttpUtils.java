@@ -3,6 +3,8 @@ package xyz.douzhan.bank.utils;
 import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import org.springframework.util.AntPathMatcher;
+import xyz.douzhan.bank.constants.PathConstants;
 import xyz.douzhan.bank.result.Result;
 
 
@@ -20,6 +22,23 @@ import java.util.List;
  * @since JDK 17
  */
 public class HttpUtils {
+    private static final AntPathMatcher antPathMatcher=new AntPathMatcher();
+
+    /**
+     * 路径匹配
+     * @param pathPatternList
+     * @param request
+     * @return
+     */
+    public static Boolean match(List pathPatternList,HttpServletRequest request){
+        //白名单放行
+        for (String path : PathConstants.WHITE_LIST) {
+            if(antPathMatcher.match(path,request.getServletPath())){
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * 返回前端结果

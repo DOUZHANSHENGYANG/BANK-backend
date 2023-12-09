@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.controller.mobile;
 
-import org.springframework.security.access.prepost.PreAuthorize;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
  * @author 斗战圣洋
  * @since 2023-12-06
  */
+@Tag(name="转账交易")
 @RestController
 @RequestMapping("/bank/transaction")
 //@PreAuthorize("hasRole('USER')")

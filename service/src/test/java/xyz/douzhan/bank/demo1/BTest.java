@@ -17,8 +17,8 @@ import xyz.douzhan.bank.po.PhoneAccount;
 public class BTest {
     @Test
     public void testGetSafe(){
-        String username="zhangsan123";
-        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getUsername, username).one();
-        System.out.println("safe.getUsername() = " + phoneAccount.getUsername());
+        String id="1";
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, id).one();
+        System.out.println("safe.getUsername() = " + phoneAccount.getId());
     }
 }

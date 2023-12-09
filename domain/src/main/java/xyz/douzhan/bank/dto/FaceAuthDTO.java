@@ -17,14 +17,14 @@ import lombok.Getter;
 @Data
 @Schema(description = "人脸认证DTO")
 public class FaceAuthDTO {
-    @NotBlank(message = "名字不能为空")
-    @Schema(description = "姓名")
+//    @NotBlank(message = "名字不能为空")
+//    @Schema(description = "姓名")
     private String name;
-    @Pattern(regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$",message = "身份证号格式错误")
+//    @Pattern(regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$",message = "身份证号格式错误")
     @Schema(description = "身份证号")
-    private String ICNum;
+    private String iCNum;
     @Schema(description = "身份证照片")
-    private String Base64IDCard;
+    private String base64IDCard;
     @Schema(description = "活体脸照")
-    private String Base64Person;
+    private String base64Person;
 }

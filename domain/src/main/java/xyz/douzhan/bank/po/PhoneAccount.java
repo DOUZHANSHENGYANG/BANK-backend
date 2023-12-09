@@ -6,6 +6,7 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
 import xyz.douzhan.bank.handler.EncodeTypeHandler;
@@ -39,13 +40,6 @@ public class PhoneAccount implements Serializable {
     @TableField("phone_number")
     private String phoneNumber;
 
-    @Schema(description = "用户角色")
-    @TableField("role")
-    private String role;
-
-    @Schema(description = "用户名6-20位含有数字、字母")
-    @TableField("username")
-    private String username;
 
     @Schema(description = "账户密码  长度8-20位 区分大小写 至少包含一个字母和一个数字，支持键盘可见字符（不包含空格，不包括汉字），不允许全角字符 不应该使用生日，身份证号，简单字母数字")
     @TableField(value = "account_pwd",typeHandler = EncodeTypeHandler.class)
@@ -58,6 +52,10 @@ public class PhoneAccount implements Serializable {
     @Schema(description = "证书url")
     @TableField("certificate")
     private String certificate;
+
+    @Schema(description = "头像url")
+    @TableField("avatar")
+    private String avatar;
 
     @Schema(description = "更新时间")
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)

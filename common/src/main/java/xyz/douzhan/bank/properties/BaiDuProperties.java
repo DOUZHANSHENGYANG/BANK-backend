@@ -16,8 +16,8 @@ import org.springframework.stereotype.Component;
 @Data
 @ConfigurationProperties(prefix = "bank.baidu")
 public class BaiDuProperties {
-    private String AppID="44513880";
-    private String APIKey="YXtFzXr6ssK8eZoPPDKDTi2w";
-    private String SecretKey ="y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox";
+    private String AppID="44566860";
+    private String APIKey="Yk7PjrvbF5C1echDlOodXOk3";
+    private String SecretKey ="jRNm0jYnjLL0GLSMymvsps0UhTU3tthj";
 
 }

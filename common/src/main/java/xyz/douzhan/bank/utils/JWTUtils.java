@@ -7,6 +7,8 @@ import cn.hutool.jwt.JWTUtil;
 import cn.hutool.jwt.signers.JWTSigner;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
+import xyz.douzhan.bank.exception.AuthenticationException;
+import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.properties.JWTProperties;
 
 import java.time.LocalDateTime;
@@ -38,7 +40,7 @@ public class JWTUtils {
      * @param userInfo
      * @return
      */
-    public static String genToken(String userInfo) {
+    public static String genToken(Object userInfo) {
         //jwt过期时间
         long expireTime = LocalDateTime.now().plusDays(jwtProperties.getTtl()).toEpochSecond(ZoneOffset.UTC);
         HashMap<String, Object> payloads = new HashMap<>();
@@ -56,13 +58,13 @@ public class JWTUtils {
      */
     public static void verifyToken(String token){
         if(JWTUtil.verify(token, jwtSigner)){
-            throw new RuntimeException("jwt格式不合法");
+            throw new AuthenticationException("jwt格式不合法");
         }
         JWT jwt = JWTUtil.parseToken(token);
         NumberWithFormat exp = (NumberWithFormat) jwt.getPayload().getClaim(JWT.EXPIRES_AT);
 
         if (LocalDateTime.ofEpochSecond(exp.longValue(),0,ZoneOffset.UTC).isBefore(LocalDateTime.now())){
-            throw new RuntimeException("jwt过期");
+            throw new AuthenticationException("jwt过期");
         }
     }
 

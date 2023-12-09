@@ -18,4 +18,6 @@ import org.springframework.stereotype.Component;
 public class AliYunProperties {
     private String accessKeyID="LTAI5tFMX5tTipQqFoyTpdGf";
     private String accessKeySecret="Bsvfp2DFINWN4cA0rFSexuXm6beAk3";
+    private String ossEndPoint="https://oss-cn-beijing.aliyuncs.com";
+    private String ossBucketName="cumtbank-documents";
 }

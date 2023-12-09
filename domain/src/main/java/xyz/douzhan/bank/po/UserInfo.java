@@ -44,20 +44,20 @@ public class UserInfo implements Serializable {
     private String gender;
 
     @Schema(description = "证件类型（0代表身份证）")
-    @TableField("card_type")
-    private String cardType;
+    @TableField("documents_type")
+    private String documentsType;
 
     @Schema(description = "证件号码")
-    @TableField("card_num")
-    private String cardNum;
+    @TableField("documents_num")
+    private String documentsNum;
 
     @Schema(description = "证件起始日")
-    @TableField("card_start_date")
-    private LocalDate cardStartDate;
+    @TableField("documents_start_date")
+    private LocalDate documentsStartDate;
 
     @Schema(description = "证件到期日")
-    @TableField("card_exp_date")
-    private LocalDate cardExpDate;
+    @TableField("documents_exp_date")
+    private LocalDate documentsExpDate;
 
     @Schema(description = "国家/地区")
     @TableField("country")
@@ -100,7 +100,7 @@ public class UserInfo implements Serializable {
     private String personalPhoto;
 
     @Schema(description = "创建时间")
-    @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
+    @TableField(value = "update_time",fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "更新时间")

@@ -29,8 +29,6 @@ public class RegisterDTO {
     private String accountPWD;
     @Schema(description = "支付密码")
     private String payPWD;
-    @Schema(description = "开通用途")
-    private String purpose;
 //    @Pattern(regexp = "^[1-9]\\d{5}(18|19|([23]\\d))\\d{2}((0[1-9])|(10|11|12))(([0-2][1-9])|10|20|30|31)\\d{3}[0-9Xx]$",message = "身份证号格式错误")
 //    @Schema(description = "身份证号")
 //    private String ICNum;

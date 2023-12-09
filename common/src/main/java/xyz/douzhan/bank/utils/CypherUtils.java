@@ -138,6 +138,5 @@ public class CypherUtils {
         public String getAlgorithm() {
             return "sm2";
         }
-
     }
 }

@@ -4,6 +4,8 @@ import jakarta.validation.constraints.Max;
 import org.mybatis.spring.annotation.MapperScan;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
+import org.springframework.boot.web.servlet.ServletComponentScan;
+import org.springframework.transaction.annotation.EnableTransactionManagement;
 
 /**
  * 一些声明信息
@@ -15,6 +17,8 @@ import org.springframework.boot.autoconfigure.SpringBootApplication;
  */
 @SpringBootApplication
 @MapperScan("xyz.douzhan.bank.mapper")
+@EnableTransactionManagement
+@ServletComponentScan
 public class BankApplication {
     public static void main(String[] args) {
         SpringApplication.run(BankApplication.class, args);

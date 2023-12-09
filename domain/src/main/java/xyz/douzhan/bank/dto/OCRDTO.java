@@ -16,6 +16,6 @@ import lombok.Data;
 public class OCRDTO {
     @Schema(description = "类型 0为身份证")
     private Integer type;
-    @Schema(description = "图片")
-    private String base64Img;
+    @Schema(description = "正反面 0为正面 1为反面 仅银行卡有效")
+    private Integer side;
 }

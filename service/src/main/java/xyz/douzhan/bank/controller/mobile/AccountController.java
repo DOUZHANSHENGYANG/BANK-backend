@@ -4,8 +4,10 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.service.AccountService;
@@ -22,11 +24,11 @@ import xyz.douzhan.bank.service.AccountService;
 @RestController
 @RequestMapping("/bank/account")
 @RequiredArgsConstructor
-//@PreAuthorize("hasRole('USER')")
 public class AccountController {
     private final AccountService accountService;
 
     @GetMapping("/has")
+    @Operation(summary = "根据手机号判断是否存在I类账户")
     public Result getHasAccount(
             @RequestParam("phoneNumber") @Parameter(description = "手机号")String phoneNumber
     ){

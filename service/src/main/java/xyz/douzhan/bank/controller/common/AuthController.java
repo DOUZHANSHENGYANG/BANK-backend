@@ -1,32 +1,34 @@
 package xyz.douzhan.bank.controller.common;
 
 import cn.hutool.captcha.AbstractCaptcha;
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.media.Content;
-import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.constraints.Max;
 import jakarta.validation.constraints.Min;
 import jakarta.validation.constraints.Pattern;
-import org.springframework.security.access.prepost.PreAuthorize;
+import lombok.Getter;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
-
-import xyz.douzhan.bank.dto.*;
+import org.springframework.web.multipart.MultipartFile;
+import xyz.douzhan.bank.dto.FaceAuthDTO;
+import xyz.douzhan.bank.dto.OCRDTO;
+import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.enums.VerifyCodeType;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.utils.AliYunUtils;
+import xyz.douzhan.bank.utils.BaiduAIUtils;
 import xyz.douzhan.bank.utils.RedisUtils;
 import xyz.douzhan.bank.utils.VerifyCodeUtils;
-import xyz.douzhan.bank.vo.DocumentsVO;
 import xyz.douzhan.bank.vo.ImgVerifyCodeVO;
 
+import java.io.IOException;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -45,13 +47,6 @@ import java.util.concurrent.TimeUnit;
 //@PreAuthorize("hasRole('USER')")
 public class AuthController {
 
-    @PostMapping("/face")
-    @Operation(summary = "人脸认证")
-    public Result faceAuth(@RequestBody @Validated FaceAuthDTO faceAuthDTO){
-
-        //TODO 接入人脸识别
-        return Result.success();
-    }
     @GetMapping("/vc")
     @Operation(summary = "根据类型获取验证码")
     public Result getVerifyCode(
@@ -128,23 +123,43 @@ public class AuthController {
 
     @PostMapping("/ocr")
     @Operation(summary = "图像识别")
-    public Result validateVerifyCode(@RequestParam OCRDTO ocrdto){
-            if (ocrdto.getType()==0){
-                //TODO 身份信息识别
-                DocumentsVO documentsVO = new DocumentsVO();
-                return Result.success(documentsVO);
+    public Result validateVerifyCode(
+            @RequestBody @Parameter(description = "OCR实体") OCRDTO ocrdto,
+            @RequestParam("file")@Parameter(description = "图片文件") MultipartFile file
+    ) throws IOException {
+        //将图片文件编码成base64字符串
+        String base64Img = Base64.encode(file.getInputStream());
+        if (ocrdto.getType()==0){
+                String side="";
+                if (ocrdto.getSide()==0){
+                    side="front";
+                }else {
+                    side="back";
+                }
+                //TODO 身份证信息识别 待完善图片
+                Map<String, Object> ocrResult = BaiduAIUtils.ocr(ocrdto.getType(), base64Img, side);
+                return Result.success(ocrResult);
             }
             return Result.success();
     }
+    @PostMapping("/face")
+    @Operation(summary = "人脸认证")
+    public Result faceAuth(@RequestBody FaceAuthDTO faceAuthDTO){
+        Boolean result = BaiduAIUtils.faceAuth(faceAuthDTO.getBase64Person(), faceAuthDTO.getBase64IDCard());
+        //TODO 人脸识别检验等待商榷
+        if (result){
+            return Result.success();
+        }else {
+            return Result.error();
+        }
+    }
 
-    @PostMapping("/login/up")
-    @Operation(summary = "用户登录",description = "没什么用")
-    public Result login(
-            @RequestBody(required = false)
-            @Parameter(name = "LoginDTO", description = "账号密码登录")
-            UserNamePWDLoginDTO UserNamePWDLoginDTO
-    ) {
-        return Result.success().message("登录成功");
+    @GetMapping("/certificate")
+    @Operation(summary = "获取证书")
+    public Result getCertificate(){
+        //TODO 证书生成
+        String data="证书";
+      return Result.success(data);
     }
 
 
