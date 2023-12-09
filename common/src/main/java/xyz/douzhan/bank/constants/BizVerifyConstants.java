@@ -1,6 +1,5 @@
 package xyz.douzhan.bank.constants;
 
-import java.util.List;
 
 /**
  * 一些声明信息

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import xyz.douzhan.bank.enums.BankcardStatus;
 
 /**
  * <p>
@@ -20,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("bank_card")
+@TableName("bankcard")
 @Schema(description = "BankCard对象")
 public class BankCard implements Serializable {
 
@@ -39,7 +40,7 @@ public class BankCard implements Serializable {
     @TableField("account_id")
     private Long accountId;
 
-    @Schema(description = "对应账户类型 0为I类 1为II 类")
+    @Schema(description = "对应账户类型 0为I类 1为II类")
     @TableField("account_type")
     private String accountType;
 
@@ -49,7 +50,7 @@ public class BankCard implements Serializable {
 
     @Schema(description = "状态（0正常1锁定2睡眠3挂失4注销） 正常状态：可以正常进行存取款、消费等交易活动。	挂失状态：银行卡处于挂失状态，无法进行任何交易活动。销户状态：银行卡已注销，无法进行任何交易活动。锁定状态：由于密码输入错误等原因导致银行卡被锁定，无法进行任何交易活动。睡眠状态：银行卡长时间未使用，且余额为0，需要激活后才能继续使用。")
     @TableField("status")
-    private String status;
+    private BankcardStatus status;
 
     @Schema(description = "卡号 前4固定 2代表种类 10代表自动生成 ")
     @TableField("number")
@@ -63,17 +64,6 @@ public class BankCard implements Serializable {
     @TableField("money")
     private String money;
 
-    @Schema(description = "别名（用户自定义）")
-    @TableField("alias")
-    private String alias;
-
-    @Schema(description = "输入支付密码错误次数 超过3次 自动锁定（可选）")
-    @TableField("times")
-    private LocalDateTime times;
-
-    @Schema(description = "锁定的时间（可选）")
-    @TableField("locked_time")
-    private LocalDateTime lockedTime;
 
     @Schema(description = "更新时间")
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)

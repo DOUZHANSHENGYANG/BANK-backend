@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import xyz.douzhan.bank.enums.TransactionStatus;
+import xyz.douzhan.bank.enums.TransactionType;
 
 /**
  * <p>
@@ -33,11 +35,11 @@ public class Transaction implements Serializable {
 
     @Schema(description = "类型（0转账转入1装账转出2二维码转入3二维码转出）")
     @TableField("type")
-    private String type;
+    private TransactionType type;
 
-    @Schema(description = "状态（0正在1成功结束2异常结束）")
+    @Schema(description = "状态（0进行中1成功2异常失败）")
     @TableField("state")
-    private String state;
+    private TransactionStatus state;
 
     @Schema(description = "订单号 0-231226-00000-0001 0表示交易类型 231266表示年月日 00000表示秒 最后五位表示订单号")
     @TableField("order_num")

@@ -6,30 +6,30 @@ import lombok.Getter;
 
 /**
  * 一些声明信息
- * Description:问题类型
- * date: 2023/11/24 21:08
+ * Description: 账户状态
+ * date: 2023/12/9 20:14
  *
  * @author 斗战圣洋
  * @since JDK 17
  */
-
 @Getter
-public enum QuestionType {
-    ACCOUNT(0, "账户"),
-    TRANSFER(1, "转账"),
-    SELECT(1, "查询"),
-    SERVICE(1, "便捷服务"),
-    OTHER(1, "其他")
-    ;
+public enum AccountStatus {
+    NOT_ACTIVATED(0, "未激活"),
+    NORMAL(1, "正常"),
+    LOSS(2, "挂失"),
+    FREEZE(3, "冻结"),
+    LOGOUT(4, "注销"),
+    SLEEP(5, "休眠");
 
+
+    //0开户1正常2挂失3冻结4注销5休眠
     @EnumValue
     private final int value;
     @JsonValue
     private final String desc;
 
-    QuestionType(int value, String desc) {
+    AccountStatus(int value, String desc) {
         this.value = value;
         this.desc = desc;
     }
 }
-

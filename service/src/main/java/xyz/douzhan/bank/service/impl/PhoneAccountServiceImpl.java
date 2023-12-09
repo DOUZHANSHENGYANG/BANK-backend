@@ -1,7 +1,9 @@
 package xyz.douzhan.bank.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
+import cn.hutool.db.DbUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
@@ -19,6 +21,7 @@ import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 import xyz.douzhan.bank.mapper.PhoneAccountMapper;
+import xyz.douzhan.bank.po.BankPhoneBankRef;
 import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.po.UserInfo;
 import xyz.douzhan.bank.redis.LoginInfoRedis;
@@ -27,8 +30,10 @@ import xyz.douzhan.bank.utils.AliYunUtils;
 import xyz.douzhan.bank.utils.JWTUtils;
 import xyz.douzhan.bank.utils.RedisUtils;
 
+import java.util.List;
 import java.util.Objects;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 /**
  * <p>
@@ -167,6 +172,19 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
 
     @Override
     @Transactional
+    public void deleteAccount(Long id) {
+        //查询银行账户关联表
+        List<BankPhoneBankRef> phoneBankRefs = Db.lambdaQuery(BankPhoneBankRef.class).eq(BankPhoneBankRef::getPhoneAccountId, id).select(BankPhoneBankRef::getId).list();
+        //有记录先删除银行账户关联记录
+        if (CollUtil.isEmpty(phoneBankRefs)){
+            List<Integer> idList = phoneBankRefs.stream().map(bankPhoneBankRef -> bankPhoneBankRef.getId()).collect(Collectors.toList());
+            Db.removeByIds(idList,BankPhoneBankRef.class);
+        }
+        //删除银行表
+        this.baseMapper.deleteById(id);
+    }
+
+    @Override
     public Long register(RegisterDTO registerDTO) {
         PhoneAccount phoneAccount = new PhoneAccount();
         //复制信息

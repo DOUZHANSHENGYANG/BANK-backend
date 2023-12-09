@@ -29,7 +29,13 @@ import xyz.douzhan.bank.service.PhoneAccountService;
 public class PhoneAccountController {
 
     private final PhoneAccountService phoneAccountService;
+    @DeleteMapping("destroy")
+    @Operation(summary = "注销账户")
+    public Result deleteAccount(@Parameter(description = "手机银行账户id")@RequestParam("id") Long id) {
+        phoneAccountService.deleteAccount(id);
 
+        return Result.success();
+    }
     @PutMapping("/pwd/modify")
     @Operation(summary = "修改密码")
     public Result modifyPassword(@Parameter(description = "密码对象")@RequestBody UpdatePWDDTO updatePWDDTO) {

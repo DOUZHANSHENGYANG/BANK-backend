@@ -32,11 +32,11 @@ public class PhoneAccount implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
-    @Schema(description = "userInfoId")
+    @Schema(description = "用户信息id")
     @TableField("user_info_id")
     private Long userInfoId;
 
-    @Schema(description = "手机号码 单独管理")
+    @Schema(description = "开通银行账户的手机号码")
     @TableField("phone_number")
     private String phoneNumber;
 

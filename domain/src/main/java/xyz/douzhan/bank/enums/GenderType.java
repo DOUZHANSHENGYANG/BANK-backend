@@ -1,6 +1,7 @@
 package xyz.douzhan.bank.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -13,15 +14,16 @@ import lombok.Getter;
  */
 
 @Getter
-public enum Gender {
+public enum GenderType {
     male(0,"男"),
     female(1,"女"),
     ;
     @EnumValue
     private final int value;
+    @JsonValue
     private final String desc;
 
-    Gender(int value, String desc){
+    GenderType(int value, String desc){
         this.value=value;
         this.desc=desc;
     }

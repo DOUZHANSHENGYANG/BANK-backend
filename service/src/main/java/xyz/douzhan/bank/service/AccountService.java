@@ -2,6 +2,7 @@ package xyz.douzhan.bank.service;
 
 import xyz.douzhan.bank.po.Account;
 import com.baomidou.mybatisplus.extension.service.IService;
+import xyz.douzhan.bank.vo.AccountVO;
 
 /**
  * <p>
@@ -12,5 +13,11 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-06
  */
 public interface AccountService extends IService<Account> {
-
+    /**
+     * 根据手机id获取账户信息
+     *
+     * @param id
+     * @return
+     */
+    AccountVO getAccountInfo(Long id);
 }

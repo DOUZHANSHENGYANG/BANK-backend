@@ -9,6 +9,8 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import xyz.douzhan.bank.enums.DocumentsType;
+import xyz.douzhan.bank.enums.GenderType;
 
 /**
  * <p>
@@ -41,11 +43,11 @@ public class UserInfo implements Serializable {
 
     @Schema(description = "性别(0男1女)")
     @TableField("gender")
-    private String gender;
+    private GenderType gender;
 
     @Schema(description = "证件类型（0代表身份证）")
     @TableField("documents_type")
-    private String documentsType;
+    private DocumentsType documentsType;
 
     @Schema(description = "证件号码")
     @TableField("documents_num")

@@ -1,6 +1,7 @@
 package xyz.douzhan.bank.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
@@ -13,12 +14,13 @@ import lombok.Getter;
  */
 @Getter
 public enum TransactionStatus {
-    ONGOING(0,"交易进行中"),
-    SUCCESS(1,"交易成功"),
-    ERROR(2,"交易异常")
+    ONGOING(0,"进行中"),
+    SUCCESS(1,"成功"),
+    ERROR(2,"异常")
     ;
     @EnumValue
     private final int value;
+    @JsonValue
     private final String desc;
 
     TransactionStatus(int value, String desc){

@@ -8,9 +8,11 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+import xyz.douzhan.bank.constants.BankConstants;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.service.AccountService;
+import xyz.douzhan.bank.vo.AccountVO;
 
 /**
  * <p>
@@ -34,8 +36,14 @@ public class AccountController {
     ){
         Account account = accountService.lambdaQuery().eq(Account::getPhoneNumber, phoneNumber).one();
         if (account==null){
-            return Result.error().message("未曾在本行开户，请前往线下办理卡户");
+            return Result.error().message(BankConstants.REFUSE_TO_REGISTER_A_RESPONSE);
         }
         return Result.success();
+    }
+    @GetMapping("/info")
+    @Operation(summary = "获取账户信息")
+    public Result getAccountInfo(@RequestParam("id") @Parameter(description = "银行账户id")Long id){
+        AccountVO accountVO =accountService.getAccountInfo(id);
+        return Result.success(accountVO);
     }
 }

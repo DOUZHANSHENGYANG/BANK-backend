@@ -1,27 +1,29 @@
 package xyz.douzhan.bank.enums;
 
 import com.baomidou.mybatisplus.annotation.EnumValue;
+import com.fasterxml.jackson.annotation.JsonValue;
 import lombok.Getter;
 
 /**
  * 一些声明信息
- * Description:用户状态
- * date: 2023/11/24 20:01
+ * Description: 银行卡状态
+ * date: 2023/11/24 20:57
  *
  * @author 斗战圣洋
  * @since JDK 17
  */
 @Getter
-public enum UserStatus {
-    NORMAL(0,"正常"),
-    FREEZE(1,"冻结"),
-    GOODBYE(2,"注销")
+public enum BankcardStatus {
+    NOT_ACTIVE(0,"未激活"),
+    NORMAL(1,"正常"),
+    LOCK(2,"锁定")
     ;
     @EnumValue
     private final int value;
+    @JsonValue
     private final String desc;
 
-    UserStatus(int value, String desc){
+    BankcardStatus(int value, String desc){
         this.value=value;
         this.desc=desc;
     }

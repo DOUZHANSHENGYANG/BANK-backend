@@ -71,4 +71,10 @@ public interface PhoneAccountService extends IService<PhoneAccount> {
      * @return
      */
     boolean resetPassword(Long id, Integer type, String password);
+
+    /**
+     * 注销账户
+     * @param id
+     */
+    void deleteAccount(Long id);
 }
