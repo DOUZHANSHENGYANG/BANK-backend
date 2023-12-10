@@ -12,5 +12,10 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-06
  */
 public interface UserInfoService extends IService<UserInfo> {
-
+    /**
+     * 根据手机银行id获取用户信息
+     * @param id
+     * @return
+     */
+    UserInfo getInfo(Long id);
 }

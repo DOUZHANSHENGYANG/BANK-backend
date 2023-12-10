@@ -14,4 +14,10 @@ public interface BankConstants {
     String ELECTRONIC_ACCOUNTS="电子账户";
     String REFUSE_TO_REGISTER_A_RESPONSE="如您尚未在本行开立账户，请线下申请账户";
     String CONTRACTED_ACCOUNTS="签约账户";
+    String FIRST_ACCOUNT="I类";
+    String SECOND_ACCOUNT="II类";
+    String THIRD_ACCOUNT="III类";
+
+    String ACCOUNT_IDENTIFIER="银行账户标识符";
+    String DEFAULT_BALANCE="0.00";
 }

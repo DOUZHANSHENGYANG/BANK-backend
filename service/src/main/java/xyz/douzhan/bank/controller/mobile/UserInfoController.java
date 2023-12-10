@@ -1,6 +1,7 @@
 package xyz.douzhan.bank.controller.mobile;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
@@ -24,10 +25,10 @@ public class UserInfoController {
     private final UserInfoService userInfoService;
 
 
-    @GetMapping("")
+    @GetMapping("/info")
     @Operation(summary = "获取用户信息")
-    public Result getUserInfo(@RequestParam("id") Long id) {
-        UserInfo userInfo = userInfoService.getById(id);
+    public Result getUserInfo(@RequestParam("id")@Parameter(description = "手机号账户id") Long id) {
+        UserInfo userInfo = userInfoService.getInfo(id);
         if (userInfo==null){
             return Result.error();
         }
@@ -35,9 +36,9 @@ public class UserInfoController {
     }
 
 
-    @PutMapping("")
+    @PutMapping("/info")
     @Operation(summary = "更新用户信息")
-    public Result updateUserInfo(@RequestBody  UserInfo userInfo) {
+    public Result updateUserInfo(@RequestBody @Parameter(description = "用户信息id") UserInfo userInfo) {
         boolean isUpdated = userInfoService.updateById(userInfo);
           if (!isUpdated){
             return Result.error();

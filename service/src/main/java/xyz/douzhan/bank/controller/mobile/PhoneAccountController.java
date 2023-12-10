@@ -29,6 +29,17 @@ import xyz.douzhan.bank.service.PhoneAccountService;
 public class PhoneAccountController {
 
     private final PhoneAccountService phoneAccountService;
+
+
+//    @DeleteMapping("destroy")
+//    @Operation(summary = "注销账户")
+//    public Result deleteAccount(@Parameter(description = "手机银行账户id")@RequestParam("id") Long id) {
+//        phoneAccountService.deleteAccount(id);
+//
+//        return Result.success();
+//    }
+
+
     @DeleteMapping("destroy")
     @Operation(summary = "注销账户")
     public Result deleteAccount(@Parameter(description = "手机银行账户id")@RequestParam("id") Long id) {

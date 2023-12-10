@@ -6,6 +6,8 @@ import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
@@ -54,10 +56,12 @@ public class UserInfo implements Serializable {
     private String documentsNum;
 
     @Schema(description = "证件起始日")
+    @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField("documents_start_date")
     private LocalDate documentsStartDate;
 
     @Schema(description = "证件到期日")
+    @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField("documents_exp_date")
     private LocalDate documentsExpDate;
 
@@ -102,10 +106,12 @@ public class UserInfo implements Serializable {
     private String personalPhoto;
 
     @Schema(description = "创建时间")
+    @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField(value = "update_time",fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
 
     @Schema(description = "更新时间")
+    @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField(value = "create_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime createTime;
 }

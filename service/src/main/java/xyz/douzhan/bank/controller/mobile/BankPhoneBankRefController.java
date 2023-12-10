@@ -40,7 +40,7 @@ public class BankPhoneBankRefController {
     @GetMapping("/account")
     @Operation(summary = "查询已关联的账户")
     public Result getAccount(@RequestParam("id")@Parameter(description = "手机账户id")Long id){
-        List<AccountVO> asset=bankPhoneBankRefService.getAccount(id);
+        List<AccountVO> asset = bankPhoneBankRefService.getAccount(id);
         return Result.success(asset);
     }
 

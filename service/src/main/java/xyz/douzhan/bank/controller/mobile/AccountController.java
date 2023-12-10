@@ -1,18 +1,18 @@
 package xyz.douzhan.bank.controller.mobile;
 
+import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.douzhan.bank.constants.BankConstants;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.service.AccountService;
 import xyz.douzhan.bank.vo.AccountVO;
+
+import java.util.List;
 
 /**
  * <p>
@@ -29,8 +29,28 @@ import xyz.douzhan.bank.vo.AccountVO;
 public class AccountController {
     private final AccountService accountService;
 
-    @GetMapping("/has")
-    @Operation(summary = "根据手机号判断是否存在I类账户")
+    @PostMapping("/create")
+    @Operation(summary = "开通银行账户")
+    public Result getAccountNumber(
+            @RequestBody@Parameter(description = "账户实体") Account account,
+            @RequestParam("phoneAccountId")@Parameter(description = "手机账户id") Long phoneAccountId
+    ){
+        accountService.createAccount(account,phoneAccountId);
+        return Result.success();
+    }
+
+    @GetMapping("/number")
+    @Operation(summary = "根据手机账户id查询账户卡号和手机号")
+    public Result createAccount(
+            @RequestParam("id") @Parameter(description = "手机账户id")Long id,
+            @RequestParam("type") @Parameter(description = "类型 0全查 1为查I类 2为查II类 3为查III类")Integer type
+    ){
+        JSONObject result= accountService.getAccountNumber(id,type);
+        return Result.success(result);
+
+    }
+    @GetMapping("/hasfirst")
+    @Operation(summary = "根据手机号查询是否有I类账户")
     public Result getHasAccount(
             @RequestParam("phoneNumber") @Parameter(description = "手机号")String phoneNumber
     ){
