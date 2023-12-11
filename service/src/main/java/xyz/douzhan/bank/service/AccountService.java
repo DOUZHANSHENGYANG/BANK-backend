@@ -45,4 +45,11 @@ public interface AccountService extends IService<Account> {
      * @param status
      */
     void updateStatus(Long accountId, Integer status);
+
+    /**
+     * 比较交易密码
+     * @param id
+     * @param payPwd
+     */
+    void comparePayPwd(Long id, String payPwd);
 }

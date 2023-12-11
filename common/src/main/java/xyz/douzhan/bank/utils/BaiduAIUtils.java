@@ -38,29 +38,30 @@ public class BaiduAIUtils {
 
     /**
      * 人脸识别 将身份证和实时抓拍的人脸做对比 80以上就为合格
+     *
      * @param base64Live
      * @param base64IDCard
      * @return
      */
-    public static Boolean faceAuth( String base64Live, String base64IDCard) {
+    public static Boolean faceAuth(String base64Live, String base64IDCard) {
         MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "[{\"image\":\""+base64Live+"\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"},{\"image\":\""+base64IDCard+"\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"}]");
+        RequestBody body = RequestBody.create(mediaType, "[{\"image\":\"" + base64Live + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"},{\"image\":\"" + base64IDCard + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"}]");
         try {
-        Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + getAccessToken())
-                .method("POST", body)
-                .addHeader("Content-Type", "application/json")
-                .build();
+            Request request = new Request.Builder()
+                    .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + getAccessToken())
+                    .method("POST", body)
+                    .addHeader("Content-Type", "application/json")
+                    .build();
             Response response = HttpClientUtils.getHTTP_CLIENT().newCall(request).execute();
             JSONObject result = new JSONObject(response.body().string());
-            if (!StrUtil.equals( result.getString("error_msg"),"success",false)){
-                   return false;
+            if (!StrUtil.equals(result.getString("error_msg"), "success", false)) {
+                return false;
             }
-            if (result.getJSONObject("result").getBigDecimal("score").compareTo(new BigDecimal("80.00"))==-1){
+            if (result.getJSONObject("result").getBigDecimal("score").compareTo(new BigDecimal("80.00")) == -1) {
                 return false;
             }
         } catch (IOException e) {
-            throw new ThirdPartyAPIException("百度人脸识别异常:"+e.getMessage());
+            throw new ThirdPartyAPIException("百度人脸识别异常:" + e.getMessage());
         }
         return true;
     }
@@ -73,7 +74,7 @@ public class BaiduAIUtils {
      * @param idCardSide
      * @return
      */
-    public static Map<String, Object> ocr(Integer type, String base64Img, String idCardSide) {
+    public static Map<String, Object> ocr(Integer type, String base64Img, String idCardSide) throws JsonProcessingException {
         AipOcr client = createOcrClient();
         // 传入可选参数调用接口
         HashMap<String, String> options = new HashMap<String, String>();
@@ -82,24 +83,21 @@ public class BaiduAIUtils {
 
         JSONObject res = null;
         Map<String, Object> resultMap = null;
-        try {
-            if (type==0) {//身份证识别
-                res = client.idcard(base64Img, idCardSide, options);
-                resultMap = parseJsonString(res.toString(), "words_result", "words");
+        if (type == 0) {//身份证识别
+            res = client.idcard(base64Img, idCardSide, options);
+            resultMap = parseJsonString(res.toString(), "words_result", "words");
 
-            } else if (type==1) {//银行卡识别
-                res = client.bankcard(base64Img, options);
-                JSONObject result = res.getJSONObject("result");
-                resultMap = result.toMap();
-            }
-        } catch (Exception e) {
-            throw new ThirdPartyAPIException("第三方百度接口调用异常");
+        } else if (type == 1) {//银行卡识别
+            res = client.bankcard(base64Img, options);
+            JSONObject result = res.getJSONObject("result");
+            resultMap = result.toMap();
         }
         return resultMap;
     }
 
     /**
      * 解析jsonObject
+     *
      * @param jsonString
      * @param position
      * @param name

@@ -1,9 +1,11 @@
 package xyz.douzhan.bank.service;
 
+import org.springframework.web.multipart.MultipartFile;
+import xyz.douzhan.bank.dto.OCRDTO;
 import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.vo.ImgVerifyCodeVO;
 
-import javax.security.sasl.AuthenticationException;
+import java.util.Map;
 
 /**
  * 一些声明信息
@@ -30,9 +32,11 @@ public interface AuthService {
     void validateVerifyCode(ValidateVerifyCodeDTO verifyCodeDTO) ;
 
     /**
-     * 比较交易密码
-     * @param id
-     * @param payPwd
+     * 图像识别
+     *
+     * @param ocrdto
+     * @param file
+     * @return
      */
-    void comparePayPwd(Long id, String payPwd);
+    Map<String, Object> ocr(OCRDTO ocrdto, MultipartFile file);
 }

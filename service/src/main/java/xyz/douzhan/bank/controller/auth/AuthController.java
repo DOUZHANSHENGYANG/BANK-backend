@@ -37,14 +37,11 @@ public class AuthController {
     @GetMapping("/vc")
     @Operation(summary = "根据类型获取验证码")
     public Result getVerifyCode(
-            @RequestParam(name = "type") @Parameter(name = "type", description = "0为图形验证码，1为短信验证码")
-            Integer type,
-            @RequestParam(name = "exp", required = false, defaultValue = "60") @Parameter(name = "exp", description = "过期时间,默认为60s")
-            Integer exp,
-            @RequestParam(name = "phoneNumber", required = false) @Parameter(name = "phoneNumber", description = "手机号")
-            String phoneNumber
-    )  {
-        ImgVerifyCodeVO imgVerifyCodeVO=authService.getVerifyCode(type,exp,phoneNumber);
+            @RequestParam(name = "type") @Parameter(description = "0为图形验证码，1为短信验证码") Integer type,
+            @RequestParam(name = "exp", required = false, defaultValue = "60") @Parameter(description = "过期时间,默认为60s") Integer exp,
+            @RequestParam(name = "phoneNumber", required = false) @Parameter(description = "手机号") String phoneNumber
+    ) {
+        ImgVerifyCodeVO imgVerifyCodeVO = authService.getVerifyCode(type, exp, phoneNumber);
         return Result.success(imgVerifyCodeVO);
     }
 
@@ -54,29 +51,17 @@ public class AuthController {
             @RequestBody @Parameter(description = "ValidateVerifyCodeDTO") ValidateVerifyCodeDTO verifyCodeDTO
     ) {
         authService.validateVerifyCode(verifyCodeDTO);
-        return  Result.success();
+        return Result.success();
     }
 
     @PostMapping("/ocr")
     @Operation(summary = "图像识别")
-    public Result validateVerifyCode(
+    public Result ocr(
             @RequestBody @Parameter(description = "OCR实体") OCRDTO ocrdto,
             @RequestParam("file") @Parameter(description = "图片文件") MultipartFile file
-    ) throws IOException {
-        //将图片文件编码成base64字符串
-        String base64Img = Base64.encode(file.getInputStream());
-        if (ocrdto.getType() == 0) {
-            String side = "";
-            if (ocrdto.getSide() == 0) {
-                side = AuthConstant.IMG_FRONT;
-            } else {
-                side = AuthConstant.IMG_BACK;
-            }
-            //TODO 身份证信息识别 待完善图片
-            Map<String, Object> ocrResult = BaiduAIUtils.ocr(ocrdto.getType(), base64Img, side);
-            return Result.success(ocrResult);
-        }
-        return Result.success();
+    ) {
+        Map<String, Object> ocrResult = authService.ocr(ocrdto, file);
+        return Result.success(ocrResult);
     }
 
     @PostMapping("/face")
@@ -98,14 +83,6 @@ public class AuthController {
         String data = "证书";
         return Result.success(data);
     }
-    @PutMapping("/comparepaypwd")
-    @Operation(summary = "比较交易密码")
-    public Result comparePayPwd(
-            @RequestParam("id") @Parameter(description = "手机银行账户id") Long id ,
-            @RequestParam("paypwd") @Parameter(description = "手机银行账户id")  String payPwd
-    ) {
-        authService.comparePayPwd(id,payPwd);
-        return Result.success();
-    }
+
 
 }

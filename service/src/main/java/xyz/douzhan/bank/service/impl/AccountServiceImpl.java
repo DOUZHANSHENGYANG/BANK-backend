@@ -1,13 +1,16 @@
 package xyz.douzhan.bank.service.impl;
 
 import cn.hutool.core.collection.CollUtil;
+import cn.hutool.core.util.StrUtil;
 import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import org.springframework.beans.BeanUtils;
 import org.springframework.transaction.annotation.Transactional;
+import xyz.douzhan.bank.constants.AuthConstant;
 import xyz.douzhan.bank.constants.BankConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.enums.AccountStatus;
+import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.mapper.AccountMapper;
@@ -164,5 +167,15 @@ public class AccountServiceImpl extends ServiceImpl<AccountMapper, Account> impl
         Account account = new Account();
         account.setStatus(accountStatusList.get(0));
         this.baseMapper.updateById(account);
+    }
+
+    @Override
+    public void comparePayPwd(Long id, String payPwd) {
+        //查询密码进行比较
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, id).select(PhoneAccount::getPayPWD).one();
+        CommonBizUtils.assertArgsNotNull(phoneAccount);
+        if (!StrUtil.equals(payPwd,phoneAccount.getPayPWD())){
+            throw new AuthenticationException(AuthConstant.INVALID_PAY_PWD);
+        }
     }
 }

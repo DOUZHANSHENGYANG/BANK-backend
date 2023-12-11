@@ -29,4 +29,5 @@ public interface AuthConstant {
     String IMG_FRONT="front";
     String IMG_BACK="back";
     String INVALID_PAY_PWD="支付错误";
+    String OCR_ERROR="ocr识别异常";
 }

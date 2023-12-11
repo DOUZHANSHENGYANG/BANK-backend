@@ -1,25 +1,26 @@
 package xyz.douzhan.bank.service.impl;
 
 import cn.hutool.captcha.AbstractCaptcha;
+import cn.hutool.core.codec.Base64;
 import cn.hutool.core.lang.UUID;
 import cn.hutool.core.util.StrUtil;
-import com.baomidou.mybatisplus.extension.toolkit.Db;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.web.multipart.MultipartFile;
 import xyz.douzhan.bank.constants.AuthConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
+import xyz.douzhan.bank.dto.OCRDTO;
 import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.enums.VerifyCodeType;
 import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
-import xyz.douzhan.bank.po.PhoneAccount;
+import xyz.douzhan.bank.service.AsyncService;
 import xyz.douzhan.bank.service.AuthService;
-import xyz.douzhan.bank.utils.AliYunUtils;
-import xyz.douzhan.bank.utils.CommonBizUtils;
-import xyz.douzhan.bank.utils.RedisUtils;
-import xyz.douzhan.bank.utils.VerifyCodeUtils;
+import xyz.douzhan.bank.utils.*;
 import xyz.douzhan.bank.vo.ImgVerifyCodeVO;
 
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -31,7 +32,9 @@ import java.util.concurrent.TimeUnit;
  * @since JDK 17
  */
 @Service
+@RequiredArgsConstructor
 public class AuthServiceImpl implements AuthService {
+    private final AsyncService asyncService;
     @Override
     public ImgVerifyCodeVO getVerifyCode(Integer type, Integer exp, String phoneNumber) {
         //校验参数合法性
@@ -53,10 +56,11 @@ public class AuthServiceImpl implements AuthService {
             RedisUtils.setWithExpire(AuthConstant.SMS_REDIS_PREFIX + phoneNumber, code, exp, TimeUnit.SECONDS);
             //发送短信
             try {
-                 AliYunUtils.sendSM(code, phoneNumber);
+                asyncService.sendMessage(code,phoneNumber);
             } catch (Exception e) {
-                throw new ThirdPartyAPIException(e.getMessage());
+                throw new AuthenticationException(BizExceptionConstant.SEND_SHORT_MESSAGE_FAILED);
             }
+
             return null;
         }
         //类型为图形验证码
@@ -94,12 +98,27 @@ public class AuthServiceImpl implements AuthService {
     }
 
     @Override
-    public void comparePayPwd(Long id, String payPwd) {
-        //查询密码进行比较
-        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, id).select(PhoneAccount::getPayPWD).one();
-        CommonBizUtils.assertArgsNotNull(phoneAccount);
-        if (!StrUtil.equals(payPwd,phoneAccount.getPayPWD())){
-            throw new AuthenticationException(AuthConstant.INVALID_PAY_PWD);
+    public Map<String, Object> ocr(OCRDTO ocrdto, MultipartFile file) {
+        Map<String, Object> ocrResult=null;
+        try{
+            //将图片文件编码成base64字符串
+            String base64Img = Base64.encode(file.getInputStream());
+            if (ocrdto.getType() == 0) {
+                String side = "";
+                if (ocrdto.getSide() == 0) {
+                    side = AuthConstant.IMG_FRONT;
+                } else {
+//                    side = AuthConstant.IMG_BACK;
+                }
+                //TODO 身份证信息识别 待完善图片
+                ocrResult = BaiduAIUtils.ocr(ocrdto.getType(), base64Img, side);
+            }
+        } catch (Exception e) {
+            throw new AuthenticationException(AuthConstant.OCR_ERROR);
         }
+        return ocrResult;
+
     }
+
+
 }

@@ -74,4 +74,14 @@ public class AccountController {
         AccountVO accountVO =accountService.getAccountInfo(id);
         return Result.success(accountVO);
     }
+
+    @PutMapping("/comparepwd")
+    @Operation(summary = "比较交易密码")
+    public Result comparePayPwd(
+            @RequestParam("id") @Parameter(description = "手机银行账户id") Long id ,
+            @RequestParam("paypwd") @Parameter(description = "手机银行账户id")  String payPwd
+    ) {
+        accountService.comparePayPwd(id,payPwd);
+        return Result.success();
+    }
 }
