@@ -44,8 +44,8 @@ public class Knife4jConfig {
     @Bean
     public GroupedOpenApi commonApi() {
         return GroupedOpenApi.builder()
-                .group("bank-common")
-                .pathsToMatch("/common/**")
+                .group("bank-auth")
+                .pathsToMatch("/auth/**")
                 .build();
     }
 

@@ -17,7 +17,7 @@ import xyz.douzhan.bank.utils.AliYunUtils;
 public class CTest {
     @Test
     public void testSendMessage() throws Exception {
-        Boolean b = AliYunUtils.sendSM("123456");
-        System.out.println(b);
+//        Boolean b = AliYunUtils.sendSM("123456","16680284176");
+//        System.out.println(b);
     }
 }

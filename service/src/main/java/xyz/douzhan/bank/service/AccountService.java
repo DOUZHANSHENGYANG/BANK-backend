@@ -38,4 +38,11 @@ public interface AccountService extends IService<Account> {
      * @param phoneAccountId
      */
     void createAccount(Account account, Long phoneAccountId);
+
+    /**
+     * 修改账户状态
+     * @param accountId
+     * @param status
+     */
+    void updateStatus(Long accountId, Integer status);
 }

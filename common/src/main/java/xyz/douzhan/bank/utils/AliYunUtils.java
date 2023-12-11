@@ -1,9 +1,5 @@
 package xyz.douzhan.bank.utils;
 
-import ch.qos.logback.core.joran.event.BodyEvent;
-import cn.hutool.db.Db;
-import cn.hutool.db.DbUtil;
-import com.aliyun.credentials.provider.EnvironmentVariableCredentialsProvider;
 import com.aliyun.dysmsapi20170525.Client;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponse;
 import com.aliyun.dysmsapi20170525.models.SendSmsResponseBody;
@@ -11,19 +7,18 @@ import com.aliyun.oss.ClientException;
 import com.aliyun.oss.OSS;
 import com.aliyun.oss.OSSClientBuilder;
 import com.aliyun.oss.OSSException;
-import com.aliyun.oss.common.auth.CredentialsProviderFactory;
 import com.aliyun.oss.model.PutObjectRequest;
 import com.aliyun.oss.model.PutObjectResult;
 import com.aliyun.teaopenapi.models.Config;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 import xyz.douzhan.bank.properties.AliYunProperties;
 import com.aliyun.tea.*;
 
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Objects;
 import java.util.UUID;
@@ -53,7 +48,7 @@ public class AliYunUtils {
      * @return
      * @throws Exception
      */
-    public static Boolean sendSM(String code) throws Exception {
+    public static void sendSM(String code,String phoneNumber) throws Exception {
 
         com.aliyun.dysmsapi20170525.Client client = AliYunUtils.createClient(aliYunProperties.getAccessKeyID(), aliYunProperties.getAccessKeySecret());
         com.aliyun.dysmsapi20170525.models.SendSmsRequest sendSmsRequest = new com.aliyun.dysmsapi20170525.models.SendSmsRequest()
@@ -83,10 +78,9 @@ public class AliYunUtils {
 //            System.out.println(error.getData().get("Recommend"));
 //            com.aliyun.teautil.Common.assertAsString(error.message);
         }
-        if (body!=null&&body.getCode().equals("OK")){
-            return true;
+        if (body==null||!body.getCode().equals("OK")){
+            throw new BizException(BizExceptionConstant.SEND_SHORT_MESSAGE_FAILED);
         }
-        return false;
     }
     /**
      * 使用AK&SK初始化账号Client

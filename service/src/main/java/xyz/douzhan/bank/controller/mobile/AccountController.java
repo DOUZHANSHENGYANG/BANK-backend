@@ -6,13 +6,11 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
-import xyz.douzhan.bank.constants.BankConstants;
+import xyz.douzhan.bank.constants.BankConstant;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.service.AccountService;
 import xyz.douzhan.bank.vo.AccountVO;
-
-import java.util.List;
 
 /**
  * <p>
@@ -28,6 +26,16 @@ import java.util.List;
 @RequiredArgsConstructor
 public class AccountController {
     private final AccountService accountService;
+
+    @PutMapping("/status")
+    @Operation(summary = "修改账户状态")
+    public Result getAccountNumber(
+            @RequestParam("accountId")@Parameter(description = "账户id") Long accountId,
+            @RequestParam("status")@Parameter(description = "状态类型 0开户1正常2挂失3冻结4注销5休眠") Integer status
+    ){
+        accountService.updateStatus(accountId,status);
+        return Result.success();
+    }
 
     @PostMapping("/create")
     @Operation(summary = "开通银行账户")
@@ -56,7 +64,7 @@ public class AccountController {
     ){
         Account account = accountService.lambdaQuery().eq(Account::getPhoneNumber, phoneNumber).one();
         if (account==null){
-            return Result.error().message(BankConstants.REFUSE_TO_REGISTER_A_RESPONSE);
+            return Result.error().message(BankConstant.REFUSE_TO_REGISTER_A_RESPONSE);
         }
         return Result.success();
     }

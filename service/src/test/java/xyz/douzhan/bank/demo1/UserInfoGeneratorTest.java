@@ -25,7 +25,7 @@ public class UserInfoGeneratorTest {
 //        tables.add("phone_feedback");
 //        tables.add("phone_account");
 //        tables.add("phone_payer");
-        tables.add("bank_phone_bank_ref");
+        tables.add("transaction_history");
 
         FastAutoGenerator.create("jdbc:mysql://localhost:3306/bank", "root", "1234")
                 .globalConfig(builder -> {

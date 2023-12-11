@@ -4,7 +4,7 @@ import com.alibaba.fastjson2.JSON;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.springframework.util.AntPathMatcher;
-import xyz.douzhan.bank.constants.PathConstants;
+import xyz.douzhan.bank.constants.AuthConstant;
 import xyz.douzhan.bank.result.Result;
 
 
@@ -32,7 +32,7 @@ public class HttpUtils {
      */
     public static Boolean match(List pathPatternList,HttpServletRequest request){
         //白名单放行
-        for (String path : PathConstants.WHITE_LIST) {
+        for (String path : AuthConstant.WHITE_LIST) {
             if(antPathMatcher.match(path,request.getServletPath())){
                 return true;
             }

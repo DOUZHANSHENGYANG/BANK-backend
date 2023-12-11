@@ -32,7 +32,7 @@ import java.util.Base64;
 public class ATest {
     @Test
     public void testSM4Encode()throws Exception{
-        String s = CypherUtils.encryptSM4("123456");
+        String s = CypherUtils.encryptSM4("082811");
         System.out.println(s);
         System.out.println(CypherUtils.decryptSM4(s));
     }

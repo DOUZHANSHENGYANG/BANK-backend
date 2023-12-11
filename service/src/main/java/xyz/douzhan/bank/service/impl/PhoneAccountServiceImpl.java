@@ -3,7 +3,6 @@ package xyz.douzhan.bank.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
-import cn.hutool.db.DbUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
@@ -11,9 +10,9 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
-import xyz.douzhan.bank.constants.AuthConstants;
-import xyz.douzhan.bank.constants.BizExceptionConstants;
-import xyz.douzhan.bank.constants.BizVerifyConstants;
+import xyz.douzhan.bank.constants.AuthConstant;
+import xyz.douzhan.bank.constants.BizExceptionConstant;
+import xyz.douzhan.bank.constants.BizVerifyConstant;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.dto.LoginDTO;
 import xyz.douzhan.bank.dto.RegisterDTO;
@@ -60,26 +59,26 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     public boolean modifyPassword(Long id, Integer type, String password, String oldPassword) {
         //检验参数非空
         if (id == null && type == null && password == null && oldPassword == null) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //检验类型参数合法性
         if (type < 0 || type > 1) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //查询密码
         PhoneAccount tempPhoneAccount = this.baseMapper.selectById(id);
         if (tempPhoneAccount == null) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //修改账号密码
         if (type == 0) {
             //比较密码是否正确
             if (StrUtil.equals(oldPassword, tempPhoneAccount.getAccountPWD())) {
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             //校验新密码合法性
-            if (!ReUtil.isMatch(BizVerifyConstants.ACCOUNT_PASSWORD_REGEX, password) || ReUtil.isMatch(BizVerifyConstants.SIMPLE_DIGITAL_AND_CHARACTER, password)) {
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            if (!ReUtil.isMatch(BizVerifyConstant.ACCOUNT_PASSWORD_REGEX, password) || ReUtil.isMatch(BizVerifyConstant.SIMPLE_DIGITAL_AND_CHARACTER, password)) {
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             //校验新密码不能为生日
             //查询生日
@@ -87,11 +86,11 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
                     .eq( UserInfo::getId, tempPhoneAccount.getUserInfoId())
                     .select(UserInfo::getDocumentsNum).one();
             if (userInfo == null) {
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             //比较生日
             if (ReUtil.isMatch(userInfo.getDocumentsNum().substring(9, 15), password)) {
-                throw new BizException(BizExceptionConstants.CAN_NOT_INCLUDE_BIRTHDAY);
+                throw new BizException(BizExceptionConstant.CAN_NOT_INCLUDE_BIRTHDAY);
             }
             //修改密码
             PhoneAccount phoneAccount = new PhoneAccount();
@@ -104,15 +103,15 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         //修改支付账号密码
         //比较密码是否正确
         if (StrUtil.equals(oldPassword, tempPhoneAccount.getPayPWD())) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //校验长度
         if (password.length() != 6) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //校验是否为简单连续数字字母
-        if (ReUtil.isMatch(BizVerifyConstants.SIMPLE_DIGITAL_AND_CHARACTER, password)){
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+        if (ReUtil.isMatch(BizVerifyConstant.SIMPLE_DIGITAL_AND_CHARACTER, password)){
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //修改密码
         PhoneAccount phoneAccount = new PhoneAccount();
@@ -126,31 +125,31 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     public boolean resetPassword(Long id, Integer type, String password) {
         //检验参数非空
         if (id == null && type == null && password == null) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //检验类型参数合法性
         if (type < 0 || type > 1) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //修改账号密码
         if (type == 0) {
             //校验新密码合法性
-            if (!ReUtil.isMatch(BizVerifyConstants.ACCOUNT_PASSWORD_REGEX, password) || ReUtil.isMatch(BizVerifyConstants.SIMPLE_DIGITAL_AND_CHARACTER, password)) {
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            if (!ReUtil.isMatch(BizVerifyConstant.ACCOUNT_PASSWORD_REGEX, password) || ReUtil.isMatch(BizVerifyConstant.SIMPLE_DIGITAL_AND_CHARACTER, password)) {
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             //校验新密码不能为生日
             //查询生日
             PhoneAccount tempPhoneAccount = this.baseMapper.selectById(id);
             if(tempPhoneAccount==null){
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             UserInfo userInfo = Db.lambdaQuery(UserInfo.class).eq( UserInfo::getId, tempPhoneAccount.getUserInfoId()).select(UserInfo::getDocumentsNum).one();
             if (userInfo == null) {
-                throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
             }
             //比较生日
             if (ReUtil.isMatch(userInfo.getDocumentsNum().substring(9, 15), password)) {
-                throw new BizException(BizExceptionConstants.CAN_NOT_INCLUDE_BIRTHDAY);
+                throw new BizException(BizExceptionConstant.CAN_NOT_INCLUDE_BIRTHDAY);
             }
             //修改密码
             PhoneAccount phoneAccount = new PhoneAccount();
@@ -161,7 +160,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         //修改支付账号密码
         //校验长度
         if (password.length() != 6) {
-            throw new BizException(BizExceptionConstants.BUSINESS_PARAMETERS_ARE_INVALID);
+            throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //修改密码
         PhoneAccount phoneAccount = new PhoneAccount();
@@ -222,20 +221,20 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         //判断类型合法
         Integer type = loginDTO.getType();
         if (type == null || type != 0) {
-            throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+            throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
         }
         //关键字段不能为空
         String phoneNumber = loginDTO.getPhoneNumber();
         String smsCode = loginDTO.getSmsCode();
         if (phoneNumber == null || smsCode == null) {
-            throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+            throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
         }
         //检验短信验证码
-        Object code = RedisUtils.get(AuthConstants.SMS_REDIS_PREFIX + phoneNumber);
+        Object code = RedisUtils.get(AuthConstant.SMS_REDIS_PREFIX + phoneNumber);
         // TODO 恢复删除操作
-        RedisUtils.del(AuthConstants.SMS_REDIS_PREFIX + phoneNumber);
+        RedisUtils.del(AuthConstant.SMS_REDIS_PREFIX + phoneNumber);
         if (code == null || !StrUtil.equals(code.toString(), smsCode)) {
-            throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETER_IS_INVALID);
+            throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETER_IS_INVALID);
         }
         //检验手机号合法性
         PhoneAccount phoneAccount = this.baseMapper
@@ -249,7 +248,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         //判断类型合法
         Integer type = loginDTO.getType();
         if (type == null || type == 0) {
-            throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+            throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
         }
         //手机号密码
         if (type == 1) {
@@ -257,7 +256,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
             String phoneNumber = loginDTO.getPhoneNumber();
             String password = loginDTO.getPassword();
             if (phoneNumber == null || password == null) {
-                throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+                throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
             }
             //查询账号
             PhoneAccount phoneAccount = this.baseMapper
@@ -272,7 +271,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
             String documentsNumber = loginDTO.getDocumentsNumber();
             String password = loginDTO.getPassword();
             if (documentsNumber == null || password == null) {
-                throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+                throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
             }
             //查询账号
             UserInfo userInfo = Db.lambdaQuery(UserInfo.class)
@@ -286,13 +285,13 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         }
 
         //类型不合法
-        throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
+        throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETERS_ARE_NOT_SUPPORTED);
     }
 
     private static String authPwdAndPostLogin(boolean flag, PhoneAccount phoneAccount) {
         //比较密码
         if (flag) {
-            throw new AuthenticationException(AuthConstants.AUTHENTICATION_PARAMETER_IS_INVALID);
+            throw new AuthenticationException(AuthConstant.AUTHENTICATION_PARAMETER_IS_INVALID);
         }
         //设置上下文
         UserContext.setContext(phoneAccount.getId());
@@ -301,7 +300,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         LoginInfoRedis loginInfoRedis = new LoginInfoRedis();
         loginInfoRedis.phoneAccountId(phoneAccount.getId());
         //设置缓存
-        RedisUtils.setWithExpire(AuthConstants.USR_JWT_PREFIX + token, loginInfoRedis, JWTUtils.getJwtProperties().getTtl(), TimeUnit.DAYS);
+        RedisUtils.setWithExpire(AuthConstant.USR_JWT_PREFIX + token, loginInfoRedis, JWTUtils.getJwtProperties().getTtl(), TimeUnit.DAYS);
 
         return token;
     }

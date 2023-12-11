@@ -56,7 +56,7 @@
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
-            <artifactId>spring-boot-devtools</artifactId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
         </dependency>
 <!--        一坨答辩，我的评价是不如我自己写-->
 <!--        <dependency>-->

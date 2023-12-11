@@ -24,21 +24,10 @@ import xyz.douzhan.bank.service.PhoneAccountService;
 @Tag(name = "手机银行账户")
 @RestController
 @RequestMapping("/bank/mobile/account")
-//@PreAuthorize("hasRole('USER')")
 @RequiredArgsConstructor
 public class PhoneAccountController {
 
     private final PhoneAccountService phoneAccountService;
-
-
-//    @DeleteMapping("destroy")
-//    @Operation(summary = "注销账户")
-//    public Result deleteAccount(@Parameter(description = "手机银行账户id")@RequestParam("id") Long id) {
-//        phoneAccountService.deleteAccount(id);
-//
-//        return Result.success();
-//    }
-
 
     @DeleteMapping("destroy")
     @Operation(summary = "注销账户")
@@ -66,7 +55,7 @@ public class PhoneAccountController {
         return Result.success();
     }
 
-    @PutMapping("/pn")
+    @PutMapping("/phonenumber")
     @Operation(summary = "修改账户手机号")
     public Result updatePhone(
             @RequestParam("id")@Parameter(description = "用户id")Long id,

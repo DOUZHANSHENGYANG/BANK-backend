@@ -1,17 +1,13 @@
 package xyz.douzhan.bank.filter;
 
-import cn.hutool.log.Log;
-import com.baomidou.mybatisplus.extension.toolkit.Db;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.util.AntPathMatcher;
-import xyz.douzhan.bank.constants.PathConstants;
+import xyz.douzhan.bank.constants.AuthConstant;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.exception.AuthenticationException;
-import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.redis.LoginInfoRedis;
 import xyz.douzhan.bank.utils.HttpUtils;
 import xyz.douzhan.bank.utils.JWTUtils;
@@ -36,7 +32,7 @@ public class JWTAuthFilter implements Filter {
         HttpServletRequest request= (HttpServletRequest) servletRequest;
         HttpServletResponse response= (HttpServletResponse) servletResponse;
         //是否匹配放行白名单
-        Boolean isMatch = HttpUtils.match(PathConstants.WHITE_LIST, request);
+        Boolean isMatch = HttpUtils.match(AuthConstant.WHITE_LIST, request);
         if (isMatch){
             filterChain.doFilter(servletRequest,servletResponse);
             return;

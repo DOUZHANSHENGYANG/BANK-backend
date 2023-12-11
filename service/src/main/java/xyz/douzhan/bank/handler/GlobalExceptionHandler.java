@@ -3,7 +3,6 @@ package xyz.douzhan.bank.handler;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
-import xyz.douzhan.bank.constants.BizExceptionConstants;
 import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;

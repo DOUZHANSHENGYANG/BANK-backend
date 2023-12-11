@@ -9,7 +9,6 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import xyz.douzhan.bank.enums.AccountStatus;
-import xyz.douzhan.bank.enums.AccountType;
 
 /**
  * <p>
@@ -40,17 +39,17 @@ public class Account implements Serializable {
     @TableField("identifier")
     private String identifier;
 
-    @Schema(description = "个人银行账户状态 开户1正常2挂失3冻结4注销5休眠 	备注：开户是银行账户最原始的状态，银行账户基本处于正常使用状态。长时间不使用的银行账户会进入休眠状态，经过激活银行账户为正常使用状态;存在违规操作的银行账户会被冻结，经过解冻银行账户为正常使用状态;余额小于零时银行账户为透支状态，往银行账户中存入金额才会恢复正常使用状态。")
+    @Schema(description = "个人银行账户状态 0开户1正常2挂失3冻结4注销5休眠 	备注：开户是银行账户最原始的状态，银行账户基本处于正常使用状态。长时间不使用的银行账户会进入休眠状态，经过激活银行账户为正常使用状态;存在违规操作的银行账户会被冻结，经过解冻银行账户为正常使用状态;余额小于零时银行账户为透支状态，往银行账户中存入金额才会恢复正常使用状态。")
     @TableField("status")
     private AccountStatus status;
 
-    @Schema(description = "个人银行账户类型 分为I类 II类 III类 	分别用数字0,1,2标识")
+    @Schema(description = "个人银行账户类型 分为0I类 1II类 2III类 	分别用数字0,1,2标识")
     @TableField("type")
-    private AccountType type;
+    private Integer type;
 
     @Schema(description = "银行账户余额 不同类型账户余额上限不同")
     @TableField("balance")
-    private String balance;
+    private double balance;
 
     @Schema(description = "账户密码")
     @TableField("password")
@@ -88,4 +87,8 @@ public class Account implements Serializable {
     @Schema(description = "若为 II 类 可选绑定I类账户   III 类账户 必须绑定I类 手机银行都要绑定I类")
     @TableField("account_id")
     private Long accountId;
+
+    @TableField(value = "version",fill = FieldFill.INSERT)
+    @Version
+    private Integer version;
 }

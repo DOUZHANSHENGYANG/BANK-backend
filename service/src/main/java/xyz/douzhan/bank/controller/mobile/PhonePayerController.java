@@ -13,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
  */
 @RestController
 @RequestMapping("/bank/mobile/phone-payer")
-//@PreAuthorize("hasRole('USER')")
 public class PhonePayerController {
 
 }

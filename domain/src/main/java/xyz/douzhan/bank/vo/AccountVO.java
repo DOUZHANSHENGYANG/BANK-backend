@@ -1,16 +1,10 @@
 package xyz.douzhan.bank.vo;
 
-import com.baomidou.mybatisplus.annotation.FieldFill;
-import com.baomidou.mybatisplus.annotation.IdType;
-import com.baomidou.mybatisplus.annotation.TableField;
-import com.baomidou.mybatisplus.annotation.TableId;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 import xyz.douzhan.bank.enums.AccountStatus;
-import xyz.douzhan.bank.enums.AccountType;
 
-import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 /**
@@ -34,7 +28,7 @@ public class AccountVO {
     private String bankcardNum;
 
     @Schema(description = "个人银行借记账户类型 分为I类 II类 III类 	分别用数字0,1,2标识")
-    private AccountType type;
+    private Integer type;
 
     @Schema(description = "类别名字")
     private String typeName;

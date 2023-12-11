@@ -23,7 +23,7 @@ import xyz.douzhan.bank.enums.BankcardStatus;
 @Setter
 @TableName("bankcard")
 @Schema(description = "BankCard对象")
-public class BankCard implements Serializable {
+public class Bankcard implements Serializable {
 
     @Serial
     private static final long serialVersionUID = 1L;
@@ -59,10 +59,6 @@ public class BankCard implements Serializable {
     @Schema(description = "是否是实体卡 0为实体 1为电子虚拟 ")
     @TableField("medium")
     private String medium;
-
-    @Schema(description = "金额")
-    @TableField("money")
-    private String money;
 
 
     @Schema(description = "更新时间")

@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.mapper;
 
-import xyz.douzhan.bank.po.Transaction;
+import xyz.douzhan.bank.po.Transfer;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import org.apache.ibatis.annotations.Mapper;
 
@@ -13,6 +13,6 @@ import org.apache.ibatis.annotations.Mapper;
  * @since 2023-12-06
  */
 @Mapper
-public interface TransactionMapper extends BaseMapper<Transaction> {
+public interface TransferMapper extends BaseMapper<Transfer> {
 
 }

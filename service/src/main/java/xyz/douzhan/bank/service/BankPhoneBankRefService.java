@@ -30,4 +30,11 @@ public interface BankPhoneBankRefService extends IService<BankPhoneBankRef> {
      * @return
      */
     List<AccountVO> getAccount(Long id);
+
+    /**
+     * 绑定默认卡
+     * @param accountId
+     * @param phoneAccountId
+     */
+    void bindDefaultCard(Long accountId, Long phoneAccountId);
 }

@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.service;
 
-import xyz.douzhan.bank.po.Transaction;
+import xyz.douzhan.bank.po.TransactionHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
 /**
@@ -9,8 +9,8 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * </p>
  *
  * @author 斗战圣洋
- * @since 2023-12-06
+ * @since 2023-12-11
  */
-public interface TransactionService extends IService<Transaction> {
+public interface TransactionHistoryService extends IService<TransactionHistory> {
 
 }

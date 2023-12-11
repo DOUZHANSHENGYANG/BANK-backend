@@ -8,7 +8,6 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
-import xyz.douzhan.bank.enums.AccountType;
 
 /**
  * <p>
@@ -39,7 +38,7 @@ public class BankPhoneBankRef implements Serializable {
 
     @Schema(description ="账户类型")
     @TableField("type")
-    private AccountType type;
+    private Integer type;
 
     @Schema(description = "更新时间")
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)

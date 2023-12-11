@@ -5,10 +5,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.junit.jupiter.api.Tags;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 import xyz.douzhan.bank.po.Account;
 import xyz.douzhan.bank.result.Result;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
@@ -42,6 +39,16 @@ public class BankPhoneBankRefController {
     public Result getAccount(@RequestParam("id")@Parameter(description = "手机账户id")Long id){
         List<AccountVO> asset = bankPhoneBankRefService.getAccount(id);
         return Result.success(asset);
+    }
+
+    @PutMapping ("/bind")
+    @Operation(summary = "绑定默认卡")
+    public Result bindDefaultCard(
+            @RequestParam("accountId")@Parameter(description = "需要绑卡的账户账户id") Long accountId,
+            @RequestParam("phoneAccountId")@Parameter(description = "手机账号id") Long phoneAccountId
+    ){
+        bankPhoneBankRefService.bindDefaultCard(accountId,phoneAccountId);
+        return Result.success();
     }
 
 }

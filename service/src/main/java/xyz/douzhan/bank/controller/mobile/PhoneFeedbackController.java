@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="反馈信息")
 @RestController
 @RequestMapping("/bank/mobile/phone-feedback")
-//@PreAuthorize("hasRole('USER')")
 public class PhoneFeedbackController {
 
 }
