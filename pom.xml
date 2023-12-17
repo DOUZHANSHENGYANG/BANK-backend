@@ -20,9 +20,10 @@
     <packaging>pom</packaging>
 
     <modules>
-        <module>service</module>
-        <module>common</module>
-        <module>domain</module>
+        <module>cumt-bank-service</module>
+        <module>cumt-bank-common</module>
+        <module>cumt-bank-domain</module>
+        <module>cumt-bank-utils</module>
     </modules>
 
     <properties>
