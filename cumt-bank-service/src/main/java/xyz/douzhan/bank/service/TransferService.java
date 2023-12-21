@@ -36,7 +36,7 @@ public interface TransferService extends IService<Transfer> {
      * @param orderId
      * @param status
      */
-    void completeOrder(Long orderId, Integer status,Long money);
+    void completeOrder(Long orderId, Integer status,Integer money);
 
     /**
      * 获取电子回单
@@ -44,7 +44,7 @@ public interface TransferService extends IService<Transfer> {
      * @param receiptDTO
      * @return
      */
-    PageResponseResult getHistoryRecord(DigitalReceiptDTO receiptDTO);
+//    PageResponseResult getHistoryRecord(DigitalReceiptDTO receiptDTO);
 
     /**
      * 验证电子回单
@@ -52,5 +52,43 @@ public interface TransferService extends IService<Transfer> {
      * @param name
      * @return
      */
-    Boolean validateHistoryRecord(String orderNum, String name);
+//    Boolean validateHistoryRecord(String orderNum, String name);
+
+    /**
+     * 查询二维码订单状态
+     *
+     * @param orderId
+     * @return
+     */
+    Integer queryOrderStatus(Long orderId);
+
+//    /**
+//     * 二维码被扫方设置订单状态
+//     *
+//     * @param transfer
+//     */
+//    void setQRCodeOrderStatus(Transfer transfer);
+//
+//    /**
+//     * 二维码付款码主扫方关闭订单
+//     *
+//     * @param transfer
+//     */
+//    void completeQRCodeOrder(Transfer transfer);
+//
+//    /**
+//     * 获取收款码 一分钟一次
+//     *
+//     * @param bankcardId
+//     * @return
+//     */
+//    String getCreditCode(Long bankcardId);
+//
+//    /**
+//     * 获取付款码 一分钟一次
+//     *
+//     * @param bankcardId
+//     * @return
+//     */
+//    String getRemitCode(Long bankcardId);
 }

@@ -9,6 +9,8 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
+import net.sf.jsqlparser.statement.truncate.Truncate;
+import xyz.douzhan.bank.handler.EncodeTypeHandler;
 
 /**
  * <p>
@@ -21,7 +23,7 @@ import lombok.Setter;
 @Getter
 @Setter
 @Builder
-@TableName("transaction_history")
+@TableName(value = "transaction_history")
 @Schema(description = "TransactionHistory对象")
 public class TransactionHistory implements Serializable {
 
@@ -45,20 +47,22 @@ public class TransactionHistory implements Serializable {
     private Integer result;
 
     @Schema(description = "付款人姓名")
-    @TableField("transferor_name")
+    @TableField(value = "transferor_name")
     private String transferorName;
 
-    @Schema(description = "付款方账号（卡号）")
-    @TableField("transferor_account_num")
-    private String transferorAccountNum;
+    @Schema(description = "付款方账号")
+    @TableField(value = "transferor_num")
+    private String transferorNum;
+
 
     @Schema(description = "收款人姓名")
-    @TableField("transferee_name")
+    @TableField(value = "transferee_name")
     private String transfereeName;
 
-    @Schema(description = "收款方账号（卡号）")
-    @TableField("transferee_account_num")
-    private String transfereeAccountNum;
+    @Schema(description = "收款方账号")
+    @TableField(value = "transferee_num")
+    private String transfereeNum;
+
 
     @Schema(description = "收款人银行名称")
     @TableField("transferee_bank_name")

@@ -6,6 +6,7 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import xyz.douzhan.bank.dto.TransactionDetailsDTO;
+import xyz.douzhan.bank.dto.result.PageResponseResult;
 import xyz.douzhan.bank.po.TransactionHistory;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.service.TransactionHistoryService;
@@ -26,11 +27,11 @@ import java.util.List;
 @RequiredArgsConstructor
 public class TransactionHistoryController {
     private final TransactionHistoryService transactionHistoryService;
-    @GetMapping("/details")
+    @PostMapping("/details")
     @Operation(summary = "获取交易明细")
-    public ResponseResult getTransactionDetails(@RequestBody@Parameter(description = "交易明细DTO") TransactionDetailsDTO detailsDTO) {
-        List<TransactionHistory> transactionHistories = transactionHistoryService.getTransactionDetails(detailsDTO);
-        return ResponseResult.success(transactionHistories);
+    public PageResponseResult getTransactionDetails(@RequestBody@Parameter(description = "交易明细DTO") TransactionDetailsDTO detailsDTO) {
+        return transactionHistoryService.getTransactionDetails(detailsDTO);
+
     }
 
 }

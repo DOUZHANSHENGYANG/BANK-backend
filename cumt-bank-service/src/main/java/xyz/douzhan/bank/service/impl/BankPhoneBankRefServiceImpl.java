@@ -6,17 +6,18 @@ import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import xyz.douzhan.bank.constants.BizConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.context.UserContext;
+import xyz.douzhan.bank.dto.AliasDTO;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.mapper.BankPhoneBankRefMapper;
 import xyz.douzhan.bank.po.BankPhoneBankRef;
 import xyz.douzhan.bank.po.Bankcard;
-import xyz.douzhan.bank.service.BankCardService;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
 import xyz.douzhan.bank.utils.CypherUtil;
 
@@ -47,13 +48,16 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
         //查询绑定的银行账户
         List<BankPhoneBankRef> bankPhoneBankRefList = baseMapper.selectList(
                 Wrappers.lambdaQuery(BankPhoneBankRef.class)
-                        .eq(BankPhoneBankRef::getDefaultAccount, phoneAccountId)
+                        .eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId)
                         .select(BankPhoneBankRef::getAccountId));
+        if (CollUtil.isEmpty(bankPhoneBankRefList)){
+            throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
+        }
         long sum = 0L;
+
         return bankPhoneBankRefList.stream()
-                .mapToLong(bankPhoneBankRef -> Db.lambdaQuery(Bankcard.class)
-                                        .eq(Bankcard::getId, bankPhoneBankRef.getAccountId())
-                                        .select(Bankcard::getBalance).one().getBalance())
+                .map(bankPhoneBankRef -> Db.lambdaQuery(Bankcard.class).eq(Bankcard::getId, bankPhoneBankRef.getAccountId())
+                        .select(Bankcard::getBalance).one().getBalance())
                 .reduce(sum, Long::sum);
     }
 
@@ -80,22 +84,35 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
     }
 
     /**
-     * 比较手机银行交易密码
+     * 设别名
      *
-     * @param phoneAccountId
-     * @param payPwd
-     * @return
+     * @param aliasDTO
      */
     @Override
-    public ResponseResult comparePayPwd(Long phoneAccountId, String payPwd) {
-        BankPhoneBankRef bankPhoneBankRef = baseMapper.selectOne(Wrappers.lambdaQuery(BankPhoneBankRef.class).eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId).select(BankPhoneBankRef::getPayPWD));
+    public void setAlias(AliasDTO aliasDTO) {
+        BankPhoneBankRef bankPhoneBankRef = new BankPhoneBankRef();
+        BeanUtils.copyProperties(aliasDTO,bankPhoneBankRef);
+        baseMapper.update(bankPhoneBankRef,Wrappers.lambdaUpdate(bankPhoneBankRef).eq(BankPhoneBankRef::getAccountId,bankPhoneBankRef.getAccountId()));
+    }
+
+    /**
+     * 比较手机银行交易密码
+     *
+     * @param bankcardId
+     * @param payPwd
+     */
+    @Override
+    public void comparePayPwd(Long bankcardId, String payPwd) {
+        BankPhoneBankRef bankPhoneBankRef = baseMapper.selectOne(
+                Wrappers.lambdaQuery(BankPhoneBankRef.class)
+                        .eq(BankPhoneBankRef::getAccountId, bankcardId)
+                        .select(BankPhoneBankRef::getPayPWD));
         if (bankPhoneBankRef == null) {
             throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
         }
-        if (!StrUtil.equals(CypherUtil.digest(Long.toString(phoneAccountId), payPwd), bankPhoneBankRef.getPayPWD())) {
-            return ResponseResult.error().message(BizExceptionConstant.PAY_PWD_ERROR);
+        if (!StrUtil.equals(CypherUtil.encryptSM4(payPwd), bankPhoneBankRef.getPayPWD())) {
+            throw new BizException(BizExceptionConstant.PAY_PWD_ERROR);
         }
-        return ResponseResult.success();
     }
 
     /**
@@ -116,17 +133,17 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
         return bankPhoneBankRefs.stream().map(BankPhoneBankRef::getAccountId).toList();
     }
 
-    public ResponseResult getBankcardIdByPhoneAccountId(Long phoneAccountId) {
-        List<BankPhoneBankRef> bankPhoneBankRefs = baseMapper.selectList(
-                Wrappers.lambdaQuery(BankPhoneBankRef.class)
-                        .eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId)
-                        .select(BankPhoneBankRef::getAccountId)
-        );
-        if (CollUtil.isEmpty(bankPhoneBankRefs)) {
-            return ResponseResult.error();
-        }
-        Stream<Long> ids = bankPhoneBankRefs.stream().map(BankPhoneBankRef::getAccountId);
-        return ResponseResult.success(ids);
-    }
+//    public ResponseResult getBankcardIdByPhoneAccountId(Long phoneAccountId) {
+//        List<BankPhoneBankRef> bankPhoneBankRefs = baseMapper.selectList(
+//                Wrappers.lambdaQuery(BankPhoneBankRef.class)
+//                        .eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId)
+//                        .select(BankPhoneBankRef::getAccountId)
+//        );
+//        if (CollUtil.isEmpty(bankPhoneBankRefs)) {
+//            return ResponseResult.error();
+//        }
+//        Stream<Long> ids = bankPhoneBankRefs.stream().map(BankPhoneBankRef::getAccountId);
+//        return ResponseResult.success(ids);
+//    }
 
 }

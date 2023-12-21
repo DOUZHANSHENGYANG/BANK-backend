@@ -91,6 +91,7 @@ public class AuthServiceImpl implements AuthService {
         }
         // 短信验证码
         code = RedisUtil.get(RedisConstant.SMS_REDIS_PREFIX + verifyCodeDTO.getPhoneNumber());
+        RedisUtil.del(RedisConstant.SMS_REDIS_PREFIX + verifyCodeDTO.getPhoneNumber());
         // 过期或错误
         if (code == null || !StrUtil.equals(verifyCodeDTO.getSmsCode(), code.toString())) {
             throw new AuthenticationException(AuthExceptionConstant.VERFIY_CODE_ERROR);

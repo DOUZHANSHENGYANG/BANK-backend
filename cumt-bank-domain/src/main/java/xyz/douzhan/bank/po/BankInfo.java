@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
  */
 @Getter
 @Setter
-@TableName("bank_info")
+@TableName(value = "bank_info")
 @Schema(description = "开户行实体对象")
 public class BankInfo implements Serializable {
 
@@ -30,15 +30,15 @@ public class BankInfo implements Serializable {
     private Integer id;
 
     @Schema(description = "银行名字")
-    @TableField(value = "bank_name")
+    @TableField(value = "name")
     private String name;
 
     @Schema(description = "机构代码")
-    @TableField(value = "institution_code")
+    @TableField(value = "code")
     private String institutionCode;
 
     @Schema(description = "银行详细地址")
-    @TableField(value = "bank_address")
+    @TableField(value = "address")
     private String address;
 
     @Schema(description = "更新时间")

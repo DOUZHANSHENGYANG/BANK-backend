@@ -14,17 +14,16 @@
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>
     </data-source>
-    <data-source source="LOCAL" name="1@127.0.0.1" uuid="1898eecb-520e-4256-b569-57cff25acbd7">
+    <data-source source="LOCAL" name="1@192.168.202.129" uuid="8a96b0d0-dc68-487f-a9c6-963613887a74">
       <driver-ref>redis</driver-ref>
       <synchronize>true</synchronize>
       <imported>true</imported>
-      <remarks>$PROJECT_DIR$/service/src/main/resources/application.yaml</remarks>
+      <remarks>$PROJECT_DIR$/cumt-bank-service/src/main/resources/application.yaml</remarks>
       <jdbc-driver>jdbc.RedisDriver</jdbc-driver>
-      <jdbc-url>jdbc:redis://127.0.0.1:6379/1</jdbc-url>
+      <jdbc-url>jdbc:redis://192.168.202.129:6379/1</jdbc-url>
       <jdbc-additional-properties>
         <property name="com.intellij.clouds.kubernetes.db.host.port" />
         <property name="com.intellij.clouds.kubernetes.db.enabled" value="false" />
-        <property name="com.intellij.clouds.kubernetes.db.resource.type" value="Deployment" />
         <property name="com.intellij.clouds.kubernetes.db.container.port" />
       </jdbc-additional-properties>
       <working-dir>$ProjectFileDir$</working-dir>

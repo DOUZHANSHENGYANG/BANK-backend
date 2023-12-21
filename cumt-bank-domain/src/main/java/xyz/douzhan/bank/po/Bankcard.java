@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
 import xyz.douzhan.bank.enums.BankcardStatus;
+import xyz.douzhan.bank.handler.EncodeTypeHandler;
 
 /**
  * <p>
@@ -21,7 +22,7 @@ import xyz.douzhan.bank.enums.BankcardStatus;
  */
 @Getter
 @Setter
-@TableName(value = "bankcard",autoResultMap = true)
+@TableName(value = "bankcard")
 @Schema(description = "BankCard对象")
 public class Bankcard implements Serializable {
 
@@ -45,13 +46,9 @@ public class Bankcard implements Serializable {
     private Integer type;
 
 
-    @Schema(description = "留着前八位和后四位 卡号 62 23 33（IIN）+ 12位 +（2位业务种类，3为地区代码110 ，8位账号顺序号）+ 1位校验位（Luhnalgorithm生成）存储截断版本 hash版本加")
-    @TableField("number")
+    @Schema(description = "卡号 留着前八位和后四位 卡号 62 23 33（IIN）+ 12位 +（2位业务种类，3为地区代码110 ，8位账号顺序号）+ 1位校验位（Luhnalgorithm生成）存储截断版本 hash版本加")
+    @TableField(value = "number")
     private String number;
-
-    @Schema(description = " hash版本 第九位到第15位")
-    @TableField("hash")
-    private String hash;
 
 
     @Schema(description = "余额 ")
@@ -60,11 +57,11 @@ public class Bankcard implements Serializable {
 
 
     @Schema(description = "支付密码 ")
-    @TableField("password")
+    @TableField(value = "password")
     private String password;
 
     @Schema(description = "开户预留手机号")
-    @TableField("phone_number")
+    @TableField(value = "phone_number")
     private String phoneNumber;
 
     @Schema(description = "开户行id ")
@@ -85,7 +82,8 @@ public class Bankcard implements Serializable {
 
     @Schema(description = "乐观锁")
     @TableField("version")
-    private String version;
+    @Version
+    private Integer version;
 
     @Schema(description = "更新时间")
     @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)

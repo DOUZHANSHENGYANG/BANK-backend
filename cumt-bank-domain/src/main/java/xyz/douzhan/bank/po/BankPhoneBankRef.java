@@ -19,7 +19,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("bank_phone_bank_ref")
+@TableName(value = "bank_phone_bank_ref")
 @Schema(description = "BankPhoneBankRef对象" )
 public class BankPhoneBankRef implements Serializable {
 
@@ -31,9 +31,11 @@ public class BankPhoneBankRef implements Serializable {
     private Integer id;
 
     @Schema(description = "银行账号id")
+    @TableField("account_id")
     private Long accountId;
 
     @Schema(description = "手机账号id")
+    @TableField("phone_account_id")
     private Long phoneAccountId;
 
     @Schema(description ="账户类型")

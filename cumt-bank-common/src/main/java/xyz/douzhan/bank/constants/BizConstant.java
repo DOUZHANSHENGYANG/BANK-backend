@@ -23,6 +23,7 @@ public class BizConstant {
     public static final String TRUNCATE_REMAIN_NUM="truncate";
     public static final String HASH_NUM="hash";
     public static final Integer HASH_COUNT=3;
+    public static final Integer DEFAULT_MONEY=0;
     //银行卡没有实体
     public static Integer HAS_NOT_ENTITY=0;
     //银行卡有实体

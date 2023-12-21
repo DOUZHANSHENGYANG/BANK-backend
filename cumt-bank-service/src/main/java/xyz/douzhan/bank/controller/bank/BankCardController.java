@@ -43,22 +43,21 @@ public class BankCardController {
         bankCardService.createBankcardAccount(bankcard, UserContext.getContext());
         return ResponseResult.success();
     }
+    @DeleteMapping("")
+    @Operation(summary = "注销银行卡账户")
+    public ResponseResult deleteAccount(@RequestParam("bankcardId")@Parameter(description = "银行卡id") Long bankcardId ) {
+        bankCardService.deleteAccount(bankcardId);
+        return ResponseResult.success();
+    }
 
-//    @GetMapping("/number")
-//    @Operation(summary = "根据手机账户id查询卡号和手机号")
-//    public ResponseResult getCardNumAndPhoneNumber(
-//            @RequestParam("type") @Parameter(description = "类型 0全查 1为查I类 2为查II类 3为查III类") Integer type
-//    ) {
-//        JSONObject result = bankCardService.getCardNumAndPhoneNumber(UserContext.getContext(), type);
-//        return ResponseResult.success(result);
-//    }
 
     @GetMapping("/number")
     @Operation(summary = "根据银行卡id查询完整卡号")
     public ResponseResult getBankcardNumber(
             @RequestParam("bankcardId") @Parameter(description = "银行卡id") Long bankcardId
     ) {
-        return bankCardService.getBankcardNumber(bankcardId);
+        String bankcardNumber = bankCardService.getBankcardNumber(bankcardId);
+        return ResponseResult.success(bankcardNumber);
     }
 
 
@@ -67,7 +66,8 @@ public class BankCardController {
     public ResponseResult getFirstAccount(
             @RequestParam("phoneNumber") @Parameter(description = "手机号") String phoneNumber
     ) {
-        return bankCardService.getFirstAccount(phoneNumber);
+        Long firstAccount = bankCardService.getFirstAccount(phoneNumber);
+        return ResponseResult.success(firstAccount);
     }
 
     @GetMapping("/info")

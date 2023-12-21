@@ -1,11 +1,15 @@
 package xyz.douzhan.bank.controller;
 
+import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
+import xyz.douzhan.bank.context.UserContext;
+import xyz.douzhan.bank.dto.AliasDTO;
 import xyz.douzhan.bank.dto.result.ResponseResult;
+import xyz.douzhan.bank.po.BankPhoneBankRef;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
 
 import java.util.List;
@@ -35,10 +39,10 @@ public class BankPhoneBankRefController {
     @PutMapping("/compare")
     @Operation(summary = "比较手机银行交易密码")
     public ResponseResult comparePayPwd(
-            @RequestParam("phoneAccountId") @Parameter(description = "手机银行账户id") Long phoneAccountId,
+            @RequestParam("bankcardId") @Parameter(description = "银行卡账户id") Long bankcardId,
             @RequestParam("paypwd") @Parameter(description = "手机交易密码") String payPwd
     ) {
-        bankPhoneBankRefService.comparePayPwd(phoneAccountId, payPwd);
+        bankPhoneBankRefService.comparePayPwd(bankcardId, payPwd);
         return ResponseResult.success();
     }
 
@@ -47,6 +51,12 @@ public class BankPhoneBankRefController {
     public ResponseResult getAsset(){
         Long asset = bankPhoneBankRefService.getAsset();
         return ResponseResult.success(asset);
+    }
+    @PutMapping ("/alias")
+    @Operation(summary = "设置别名")
+    public ResponseResult setAlias(@RequestBody@Parameter(description = "别名实体") AliasDTO aliasDTO){
+        bankPhoneBankRefService.setAlias(aliasDTO);
+        return ResponseResult.success();
     }
 
 

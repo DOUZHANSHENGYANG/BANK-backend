@@ -1,6 +1,6 @@
 package xyz.douzhan.bank.service;
 
-import xyz.douzhan.bank.dto.result.ResponseResult;
+import xyz.douzhan.bank.dto.AliasDTO;
 import xyz.douzhan.bank.po.BankPhoneBankRef;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -26,11 +26,10 @@ public interface BankPhoneBankRefService extends IService<BankPhoneBankRef> {
     /**
      * 比较手机银行交易密码
      *
-     * @param phoneAccountId
+     * @param bankcardId
      * @param payPwd
-     * @return
      */
-    ResponseResult comparePayPwd(Long phoneAccountId, String payPwd);
+    void comparePayPwd(Long bankcardId, String payPwd);
 
     /**
      * 查询已绑定的银行卡账户id
@@ -45,4 +44,10 @@ public interface BankPhoneBankRefService extends IService<BankPhoneBankRef> {
      * @param newBankcardId
      */
     void bindDefaultCard(Long oldBankcardId, Long newBankcardId);
+
+    /**
+     * 设别名
+     * @param aliasDTO
+     */
+    void setAlias(AliasDTO aliasDTO);
 }

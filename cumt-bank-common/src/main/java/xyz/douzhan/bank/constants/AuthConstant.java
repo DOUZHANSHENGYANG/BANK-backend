@@ -15,8 +15,8 @@ public class AuthConstant {
     public static final List<String> WHITE_LIST =
             List.of("/doc.html", "/swagger/**", "/swagger-ui.html", "/swagger-resources/**",
                     "/webjars/**", "/v2/**", "/v2/api-docs-ext/**", "/v3/api-docs/**",
-                    "/bank/mobile/account/login/*", "/bank/mobile/account/register/**", "/auth/**",
-                    "/test/**");
+                    "/bank/mobile/account/login/up","/bank/mobile/account/login/sms", "/bank/mobile/account/register", "/bank/common/auth/**",
+                    "/bank/bank/bankcard/first");
 
     public static final String IMG_FRONT = "front";
     public static final String IMG_BACK = "back";

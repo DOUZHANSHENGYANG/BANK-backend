@@ -3,15 +3,19 @@ package xyz.douzhan.bank.controller.mobile;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
+import xyz.douzhan.bank.constants.RedisConstant;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.dto.LoginDTO;
 import xyz.douzhan.bank.dto.RegisterDTO;
 import xyz.douzhan.bank.dto.UpdatePWDDTO;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.service.PhoneAccountService;
+import xyz.douzhan.bank.utils.JWTUtil;
+import xyz.douzhan.bank.utils.RedisUtil;
 
 /**
  * <p>
@@ -31,30 +35,29 @@ public class PhoneAccountController {
 
     @DeleteMapping("/destroy")
     @Operation(summary = "注销账户")
-    public ResponseResult deleteAccount(@Parameter(description = "手机银行账户id") @RequestParam("phoneAccountId") Long phoneAccountId) {
-        phoneAccountService.deleteAccount(phoneAccountId);
+    public ResponseResult deleteAccount() {
+        phoneAccountService.deleteAccount();
         return ResponseResult.success();
     }
 
     @PutMapping("/pwd/modify")
     @Operation(summary = "修改密码")
     public ResponseResult modifyPassword(@Parameter(description = "密码对象") @RequestBody UpdatePWDDTO updatePWDDTO) {
-        return phoneAccountService.modifyPassword(updatePWDDTO.getPhoneAccountId(), updatePWDDTO.getType(), updatePWDDTO.getPassword(), updatePWDDTO.getOldPassword());
+        return phoneAccountService.modifyPassword( updatePWDDTO.getType(), updatePWDDTO.getPassword(), updatePWDDTO.getOldPassword());
     }
 
     @PutMapping("/pwd/reset")
     @Operation(summary = "重置密码")
     public ResponseResult resetPassword(@RequestBody @Parameter(description = "密码对象") UpdatePWDDTO updatePWDDTO) {
-        return phoneAccountService.resetPassword(updatePWDDTO.getPhoneAccountId(), updatePWDDTO.getType(), updatePWDDTO.getPassword());
+        return phoneAccountService.resetPassword(updatePWDDTO.getType(), updatePWDDTO.getPassword());
     }
 
     @PutMapping("/phone-number")
     @Operation(summary = "修改账户手机号")
     public ResponseResult updatePhone(
-            @RequestParam("phoneAccountId") @Parameter(description = "手机银行账户id") Long phoneAccountId,
             @RequestParam("phoneNumber") @Parameter(description = "手机号") String phoneNumber
     ) {
-        return phoneAccountService.updatePhone(phoneAccountId, phoneNumber);
+        return phoneAccountService.updatePhone( phoneNumber);
     }
 
 
@@ -89,8 +92,9 @@ public class PhoneAccountController {
 
     @GetMapping("/logout")
     @Operation(summary = "退出登录")
-    public ResponseResult logout() {
-        UserContext.removeContext();
+    public ResponseResult logout(HttpServletRequest request) {
+        String token = request.getHeader(JWTUtil.getJwtProperties().getTokenName()).substring(7);
+        RedisUtil.del(RedisConstant.USR_JWT_PREFIX+token);
         return ResponseResult.success();
     }
 }

@@ -9,6 +9,7 @@ import java.time.LocalDateTime;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import xyz.douzhan.bank.handler.EncodeTypeHandler;
 
 /**
  * <p>
@@ -20,7 +21,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName(value = "transfer",autoResultMap = true)
+@TableName(value = "transfer")
 @Schema(description = "转账交易实体")
 public class Transfer implements Serializable {
 
@@ -44,28 +45,21 @@ public class Transfer implements Serializable {
     private String orderNum;
 
     @Schema(description = "转账人姓名")
-    @TableField("transferor_name")
+    @TableField(value = "transferor_name")
     private String transferorName;
 
-    @Schema(description = "转账人账户id")
-    @TableField("transferor_account_id")
-    private Long transferorAccountId;
+    @Schema(description = "转账人卡号")
+    @TableField(value = "transferor_card_num")
+    private String transferorCardNum;
+
 
     @Schema(description = "收款人姓名")
-    @TableField("transferee_name")
+    @TableField(value = "transferee_name")
     private String transfereeName;
 
-    @Schema(description = "收款人账户id")
-    @TableField("transferee_account_id")
-    private Long transfereeAccountId;
-
-    @Schema(description = "转账人银行标识付")
-    @TableField("transferor_bank_swift_code")
-    private String transferorBankSwiftCode;
-
-    @Schema(description = "收款人银行名称")
-    @TableField("transferee_bank_swift_code")
-    private String transfereeBankSwiftCode;
+    @Schema(description = "收款人卡号")
+    @TableField(value = "transferee_card_num")
+    private String transfereeCardNum;
 
     @Schema(description = "金额")
     @TableField("money")
@@ -73,7 +67,7 @@ public class Transfer implements Serializable {
 
     @Schema(description = "渠道,0个人网银 1手机银行")
     @TableField(value = "channel")
-    private LocalDateTime channel;
+    private Integer channel;
 
     @Schema(description = "手续费")
     @TableField("premium")

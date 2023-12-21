@@ -5,10 +5,12 @@ import com.baomidou.mybatisplus.annotation.*;
 import java.io.Serial;
 import java.io.Serializable;
 import java.time.LocalDateTime;
+import java.util.Base64;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
 import lombok.Setter;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  * <p>
@@ -31,6 +33,11 @@ public class PhoneFeedback implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Long id;
 
+    @Schema(description ="手机账户id")
+    @TableField("user_id")
+    private Long userId;
+
+
     @Schema(description ="类型（0反馈1建议）")
     @TableField("type")
     private String type;
@@ -39,7 +46,7 @@ public class PhoneFeedback implements Serializable {
     @TableField("description")
     private String description;
 
-    @Schema(description ="截图url")
+    @Schema(description ="截图base64编码")
     @TableField("snapshot")
     private String snapshot;
 
@@ -52,6 +59,6 @@ public class PhoneFeedback implements Serializable {
     private LocalDateTime createTime;
 
     @Schema(description ="更新时间")
-    @TableField(value = "update_time",fill = FieldFill.INSERT)
+    @TableField(value = "update_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime updateTime;
 }

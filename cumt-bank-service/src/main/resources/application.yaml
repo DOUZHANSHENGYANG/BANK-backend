@@ -1,19 +1,25 @@
+
 server:
-  port: 8888
+  port: 8888 #https端口
+  ssl:
+    key-store: classpath:cumtbank.jks
+    key-store-password: 123456              #压缩包解压里面会有
+    key-store-type: JKS
+    enabled: true
 spring:
   application:
     name: bank
   profiles:
-    active: dev
-  devtools:
-    restart:
-      enabled: true
+    active: pro
+#  devtools:
+#    restart:
+#      enabled: true
 
   data:
     redis:
-      host: 192.168.202.129
-      port: 6379
-      database: 1
+      host: ${bank.redis.host}
+      port:  ${bank.redis.port}
+      database:  ${bank.redis.database}
       connect-timeout: 3000ms
       jedis:
         pool:
@@ -60,7 +66,7 @@ mybatis-plus: # mp配置
 
 logging: # 日志
   level:
-    xyz.douzhan: debug
+    xyz.douzhan: info
   pattern:
     dateformat: HH:mm:ss:SSS
   file:
@@ -85,19 +91,8 @@ springdoc:
       paths-to-match: '/**'
       packages-to-scan:
         - xyz.douzhan.bank.controller
-        - xyz.douzhan.bank.controller.common
-        - xyz.douzhan.bank.po
-        - xyz.douzhan.bank.vo
-        - xyz.douzhan.bank.dto
-        - xyz.douzhan.bank.result
   packages-to-scan:
     - xyz.douzhan.bank.controller
-    - xyz.douzhan.bank.controller.common
-    - xyz.douzhan.bank.test
-    - xyz.douzhan.bank.po
-    - xyz.douzhan.bank.vo
-    - xyz.douzhan.bank.dto
-    - xyz.douzhan.bank.result
   show-actuator: true
 # knife4j的增强配置，不需要增强可以不配
 knife4j:
@@ -107,12 +102,6 @@ knife4j:
     enable-home-custom: true
     home-custom-path: classpath:static/markdown/APIHome.md
 
-bank:
-  minio:
-    endpoint: http://192.168.202.129:9000
-    documents-bucket-name: documents
-    access-key: douzhan
-    secret-key: minioadmin
 
 
 

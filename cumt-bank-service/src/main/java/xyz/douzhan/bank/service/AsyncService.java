@@ -13,5 +13,6 @@ public interface AsyncService {
      * 发送短信
      * @throws InterruptedException
      */
-    public void sendMessage(String code,String phoneNumber);
+    void sendMessage(String code, String phoneNumber);
+
 }

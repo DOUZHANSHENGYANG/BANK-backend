@@ -13,6 +13,7 @@ import lombok.Getter;
 import lombok.Setter;
 import xyz.douzhan.bank.enums.DocumentsType;
 import xyz.douzhan.bank.enums.GenderType;
+import xyz.douzhan.bank.handler.EncodeTypeHandler;
 
 /**
  * <p>
@@ -24,7 +25,7 @@ import xyz.douzhan.bank.enums.GenderType;
  */
 @Getter
 @Setter
-@TableName("user_info")
+@TableName(value = "user_info")
 @Schema(description ="UserInfo对象")
 public class UserInfo implements Serializable {
 
@@ -36,11 +37,11 @@ public class UserInfo implements Serializable {
     private Long id;
 
     @Schema(description = "姓名")
-    @TableField("name")
+    @TableField(value = "name")
     private String name;
 
     @Schema(description = "姓名拼音")
-    @TableField("pin_yin")
+    @TableField(value = "pin_yin")
     private String pinYin;
 
     @Schema(description = "性别(0男1女)")
@@ -52,7 +53,7 @@ public class UserInfo implements Serializable {
     private DocumentsType documentsType;
 
     @Schema(description = "证件号码")
-    @TableField("documents_num")
+    @TableField(value = "documents_num")
     private String documentsNum;
 
     @Schema(description = "证件起始日")
@@ -105,12 +106,12 @@ public class UserInfo implements Serializable {
     @TableField("personal_photo")
     private String personalPhoto;
 
-    @Schema(description = "创建时间")
+    @Schema(description = "更新时间")
     @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField(value = "update_time",fill = FieldFill.UPDATE)
     private LocalDateTime updateTime;
 
-    @Schema(description = "更新时间")
+    @Schema(description = "创建时间")
     @JsonFormat(pattern = "yyyy年MM月dd日",timezone = "GMT+8")
     @TableField(value = "create_time",fill = FieldFill.INSERT_UPDATE)
     private LocalDateTime createTime;

@@ -1,0 +1,9 @@
+10:23:40:986  INFO 15508 --- [main] xyz.douzhan.bank.demo1.ATest             : Starting ATest using Java 17.0.7 with PID 15508 (started by Chang in D:\Programming\Project\Java\BANK-bankend\cumt-bank-service)
+10:23:41:000 DEBUG 15508 --- [main] xyz.douzhan.bank.demo1.ATest             : Running with Spring Boot v3.0.9, Spring v6.0.11
+10:23:41:001  INFO 15508 --- [main] xyz.douzhan.bank.demo1.ATest             : The following 1 profile is active: "dev"
+10:23:42:058  INFO 15508 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Multiple Spring Data modules found, entering strict repository configuration mode
+10:23:42:061  INFO 15508 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Bootstrapping Spring Data Redis repositories in DEFAULT mode.
+10:23:42:080  INFO 15508 --- [main] .s.d.r.c.RepositoryConfigurationDelegate : Finished Spring Data repository scanning in 4 ms. Found 0 Redis repository interfaces.
+10:23:42:173  WARN 15508 --- [main] o.m.s.mapper.ClassPathMapperScanner      : No MyBatis mapper was found in '[xyz.douzhan.bank.demo1]' package. Please check your configuration.
+10:23:43:457  INFO 15508 --- [main] o.s.b.a.e.web.EndpointLinksResolver      : Exposing 15 endpoint(s) beneath base path '/actuator'
+10:23:45:844  INFO 15508 --- [main] xyz.douzhan.bank.demo1.ATest             : Started ATest in 5.259 seconds (process running for 6.462)

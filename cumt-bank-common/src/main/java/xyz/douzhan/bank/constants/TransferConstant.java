@@ -10,6 +10,14 @@ package xyz.douzhan.bank.constants;
  */
 public class TransferConstant {
     /**
+     * 支出
+     */
+    public static final Integer PAYMENT=1;
+    /**
+     * 收入
+     */
+    public static final Integer INCOME=0;
+    /**
      * 最小金额
      */
     public static final Integer ZERO_BALANCE=0;
@@ -24,6 +32,8 @@ public class TransferConstant {
     /**
      * 转账类型
      */
+    public static final Integer OR_CODE_REMIT=3;
+    public static final Integer OR_CODE_CREDIT=4;
     public static final Integer INTER_BANK=1;
     public static final Integer INTRA_BANK=0;
     /**
@@ -31,7 +41,7 @@ public class TransferConstant {
      */
     public static final Integer ONGOING_STATUS=0;
     public static final Integer SUCCESS_FINISH=1;
-    public static final Integer FAILED_FINISH=1;
+    public static final Integer FAILED_FINISH=2;
 
     /**
      * 手机银行转账限额 单笔50w

@@ -2,7 +2,6 @@ package xyz.douzhan.bank.service;
 
 import com.alibaba.fastjson2.JSONObject;
 import xyz.douzhan.bank.dto.BankCardVO;
-import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.po.Bankcard;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -42,10 +41,11 @@ public interface BankCardService extends IService<Bankcard> {
 
     /**
      * 根据手机号查询I类账户id
+     *
      * @param phoneNumber
      * @return
      */
-    ResponseResult getFirstAccount(String phoneNumber);
+    Long getFirstAccount(String phoneNumber);
 
     /**
      * 根据银行卡id集合查询账户信息
@@ -57,8 +57,15 @@ public interface BankCardService extends IService<Bankcard> {
 
     /**
      * 根据银行卡id查询完整卡号
+     *
      * @param bankcardId
      * @return
      */
-    ResponseResult getBankcardNumber(Long bankcardId);
+    String getBankcardNumber(Long bankcardId);
+
+    /**
+     * 注销银行卡账户
+     * @param bankcardId
+     */
+    void deleteAccount(Long bankcardId);
 }

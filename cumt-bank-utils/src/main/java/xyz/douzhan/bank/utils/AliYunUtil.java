@@ -35,23 +35,16 @@ import java.util.UUID;
 
 @Slf4j
 public class AliYunUtil {
-    private static String ACCESS_KEY_ID;
-    private static String ACCESS_KEY_SECRET;
-    private static String OSS_BUCKET_NAME;
-    private static String OSS_END_POINT;
+    private static final String ACCESS_KEY_ID="LTAI5tFMX5tTipQqFoyTpdGf";
+    private static final String ACCESS_KEY_SECRET="Bsvfp2DFINWN4cA0rFSexuXm6beAk3";
+    private static final String OSS_BUCKET_NAME="cumtbank-avatar";
+    private static final String OSS_END_POINT="https://oss-cn-beijing.aliyuncs.com";
 
-    private static String SignName = "阿里云短信测试";
-    private static String TemplateCode = "SMS_154950909";
-    private static String OK_CODE = "OK";
-    private static String AVATAR = "avatar";
+    private static final String SignName = "阿里云短信测试";
+    private static final String TemplateCode = "SMS_154950909";
+    private static final String OK_CODE = "OK";
+    private static final String AVATAR = "avatar";
 
-    public AliYunUtil() {
-        Map<String, String> config = FileUtil.getConfig(ThirdAPIConfigConstant.ALIYUN);
-        ACCESS_KEY_ID = config.get(ThirdAPIConfigConstant.ALIYUN_ACCESS_KEY_ID);
-        ACCESS_KEY_SECRET = config.get(ThirdAPIConfigConstant.ALIYUN_ACCESS_KEY_SECRET);
-        OSS_BUCKET_NAME = config.get(ThirdAPIConfigConstant.ALIYUN_OSS_BUCKET_NAME);
-        OSS_END_POINT = config.get(ThirdAPIConfigConstant.ALIYUN_OSS_END_POINT);
-    }
 
     /**
      * aliyun oss 上传文件（图片）
@@ -73,7 +66,7 @@ public class AliYunUtil {
 
         try {
             //eg: userId + avatar + UUID + . + png
-            String fileName = userId + AVATAR + UUID.randomUUID() + FileUtil.getFileTypeSuffixWithDot(file.getOriginalFilename());    // 创建文件名称
+            String fileName = userId + AVATAR +UUID.randomUUID()+ FileUtil.getFileTypeSuffixWithDot(file.getOriginalFilename());    // 创建文件名称
             // 创建PutObjectRequest对象。
             PutObjectRequest putObjectRequest = new PutObjectRequest(OSS_BUCKET_NAME, fileName, file.getInputStream());
             // 如果需要上传时设置存储类型和访问权限，请参考以下示例代码。
@@ -82,9 +75,8 @@ public class AliYunUtil {
             // metadata.setObjectAcl(CannedAccessControlList.Private);
             // putObjectRequest.setMetadata(metadata);
             //上传
-            PutObjectResult result = ossClient.putObject(putObjectRequest);
 
-            return "https://" + OSS_BUCKET_NAME + "." + OSS_END_POINT + "/" + fileName;
+            return "https://" + OSS_BUCKET_NAME + "." + "oss-cn-beijing.aliyuncs.com" + "/" + fileName;
         } catch (OSSException oe) {
             log.error("Caught an OSSException, which means your request made it to OSS, "
                     + "but was rejected with an error response for some reason.");

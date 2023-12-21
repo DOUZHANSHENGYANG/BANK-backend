@@ -1,8 +1,14 @@
 package xyz.douzhan.bank.controller.mobile;
 
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import lombok.RequiredArgsConstructor;
+import org.springframework.web.bind.annotation.*;
+import xyz.douzhan.bank.context.UserContext;
+import xyz.douzhan.bank.dto.result.ResponseResult;
+import xyz.douzhan.bank.po.PhoneFeedback;
+import xyz.douzhan.bank.service.PhoneFeedbackService;
 
 /**
  * <p>
@@ -15,6 +21,14 @@ import org.springframework.web.bind.annotation.RestController;
 @Tag(name="反馈信息")
 @RestController
 @RequestMapping("/bank/mobile/phone-feedback")
+@RequiredArgsConstructor
 public class PhoneFeedbackController {
-
+    private final PhoneFeedbackService phoneFeedbackService;
+    @PostMapping("")
+    @Operation(summary = "提交反馈信息")
+    public ResponseResult submit(@RequestBody@Parameter(description = "反馈实体") PhoneFeedback feedback) {
+        feedback.setUserId(UserContext.getContext());
+        phoneFeedbackService.save(feedback);
+        return ResponseResult.success();
+    }
 }

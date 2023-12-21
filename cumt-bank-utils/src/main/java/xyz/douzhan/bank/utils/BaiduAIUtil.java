@@ -34,17 +34,11 @@ import java.util.Map;
 public class BaiduAIUtil {
 
 
-    private static  String APP_ID;
-    private static  String API_KEY;
-    private static  String SECRET_KEY;
+    private static final String APP_ID="44513880";
+    private static final String API_KEY="YXtFzXr6ssK8eZoPPDKDTi2w";
+    private static final String SECRET_KEY="y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox";
 
 
-    public BaiduAIUtil() {
-        Map<String, String> config = FileUtil.getConfig(ThirdAPIConfigConstant.BAIDU);
-        APP_ID=config.get(ThirdAPIConfigConstant.BAIDU_APP_ID);
-        API_KEY=config.get(ThirdAPIConfigConstant.BAIDU_API_KEY);
-        SECRET_KEY=config.get(ThirdAPIConfigConstant.BAIDU_SECRET_KEY);
-    }
 
     /**
      * 人脸识别 将身份证和实时抓拍的人脸做对比 80以上就为合格
@@ -61,7 +55,7 @@ public class BaiduAIUtil {
                     mediaType,
                     "[{\"image\":\"" + base64Live + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"},{\"image\":\"" + base64IDCard + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"}]");
             Request request = new Request.Builder()
-                    .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" + getAccessToken())
+                    .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" +"24.3c496ed55be1f235afae208ddc8b9e0b.2592000.1705678890.282335-44566860")
                     .method("POST", body)
                     .addHeader("Content-Type", "application/json")
                     .build();
@@ -69,10 +63,10 @@ public class BaiduAIUtil {
             Response response = HttpClientUtil.getHTTP_CLIENT().newCall(request).execute();
             // 3.处理结果
             JSONObject result = new JSONObject(response.body().string());
-            if (!StrUtil.equals(result.getString("error_msg"), "success", false)) {
+            if (!StrUtil.equals(result.getString("error_msg"), "success", true)) {
                 return false;
             }
-            if (result.getJSONObject("result").getBigDecimal("score").compareTo(new BigDecimal("80.00")) == -1) {
+            if (result.getJSONObject("result").getBigDecimal("score").compareTo(new BigDecimal("70.00")) == -1) {
                 return false;
             }
         } catch (IOException e) {
@@ -141,20 +135,21 @@ public class BaiduAIUtil {
      * @throws IOException IO异常
      */
     static String getAccessToken() throws IOException {
-        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
-        RequestBody body = RequestBody.create(mediaType, "grant_type=client_credentials&client_id=" +APP_ID
-                + "&client_secret=" + APP_ID);
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "");
         Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/oauth/2.0/token")
+                .url("https://aip.baidubce.com/oauth/2.0/token?client_id=YXtFzXr6ssK8eZoPPDKDTi2w&client_secret=y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox&grant_type=client_credentials")
                 .method("POST", body)
-                .addHeader("Content-Type", "application/x-www-form-urlencoded")
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
                 .build();
         Response response = HttpClientUtil.getHTTP_CLIENT().newCall(request).execute();
         return new JSONObject(response.body().string()).getString("access_token");
     }
 
+
     /**
-     * 创建客户短
+     * 创建客户
      *
      * @return
      */

@@ -3,6 +3,8 @@ package xyz.douzhan.bank.dto;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
+import java.time.LocalDate;
+
 /**
  * 一些声明信息
  * Description:
@@ -14,14 +16,12 @@ import lombok.Data;
 @Data
 @Schema(description = "交易明细DTO")
 public class TransactionDetailsDTO {
-    @Schema(description = "收支类型 0全部 1收入 2支出 需要默认为0")
-    private  Integer type;
-    @Schema(description = "账户id")
-    private Long accountId;
+    @Schema(description = "卡号")
+    private String cardNum;
     @Schema(description = "开始时间")
-    private  Integer startTime;
+    private LocalDate startTime;
     @Schema(description = "结束时间 ")
-    private  Integer endTime;
+    private  LocalDate endTime;
     @Schema(description = "查询页码")
     private  Integer startPage;
     @Schema(description = "查询条数")

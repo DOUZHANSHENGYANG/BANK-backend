@@ -5,3 +5,12 @@ bank:
     database: bank
     username: root
     password: 1234
+  redis:
+    host: 192.168.202.129
+    port: 6379
+    database: 1
+  minio:
+    endpoint: http://192.168.202.129:9000
+    documents-bucket-name: documents
+    access-key: douzhan
+    secret-key: minioadmin

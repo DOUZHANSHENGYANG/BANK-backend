@@ -30,7 +30,6 @@ public class JWTAuthFilter implements Filter {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletRequest request= (HttpServletRequest) servletRequest;
-        HttpServletResponse response= (HttpServletResponse) servletResponse;
         //是否匹配放行白名单
         Boolean isMatch = HttpUtil.match(AuthConstant.WHITE_LIST, request);
         if (isMatch){

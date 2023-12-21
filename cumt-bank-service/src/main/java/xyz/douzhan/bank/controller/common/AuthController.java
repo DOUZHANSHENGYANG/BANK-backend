@@ -96,13 +96,5 @@ public class AuthController {
         }
     }
 
-    @GetMapping("/certificate")
-    @Operation(summary = "获取证书")
-    public ResponseResult getCertificate() {
-        //TODO 证书生成
-        String data = "证书";
-        return ResponseResult.success(data);
-    }
-
 
 }

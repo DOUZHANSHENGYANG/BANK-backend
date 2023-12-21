@@ -9,6 +9,9 @@ package xyz.douzhan.bank.constants;
  * @since JDK 17
  */
 public class BizExceptionConstant {
+    public static final String INVALID_TRANSFEREE_INFO="不合法的收款人信息";
+    public static final String INVALID_LOGOUT_CONDITION="不符合线上注销条件，更多请咨询客服或线下询问工作人员";
+    public static final String TRANSACTION_OR_CODE_EXPIRE="文件传输异常";
     public static final String FILE_TRANSFER_ERROR="文件传输异常";
     public static final String TRANSFER_RECORD_SELECT_FAILED="转账记录查询失败";
     public static final String NOT_SUPPORT_THE_BIZ_CURRENTLY = "该业务暂不支持，请敬请期待";

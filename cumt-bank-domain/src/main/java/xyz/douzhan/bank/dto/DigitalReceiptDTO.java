@@ -16,12 +16,12 @@ import java.time.LocalDate;
 @Data
 @Schema(description = "电子回单DTO")
 public class DigitalReceiptDTO {
-    @Schema(description = "渠道类型 0个人网银 1手机银行  必须1 懂吗老弟")
+    @Schema(description = "渠道类型 0个人网银 1手机银行  ")
     private  Integer channelType ;
-    @Schema(description = "交易类型 0行内转账 1跨行转账 必须0 还不懂ma,Na等会儿那让binbin教你-_-")
+    @Schema(description = "交易类型 0行内转账 1跨行转账 必须0 ")
     private  Integer transferType;
-    @Schema(description = "银行卡账户id")
-    private Long bankcardId;
+    @Schema(description = "电子回单卡号")
+    private String cardNum;
     @Schema(description = "开始时间")
     private LocalDate startTime;
     @Schema(description = "结束时间 ")

@@ -12,9 +12,9 @@ import org.springframework.transaction.annotation.Transactional;
 import xyz.douzhan.bank.constants.BizConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.dto.BankCardVO;
-import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.enums.AccountType;
 import xyz.douzhan.bank.enums.BankcardStatus;
+import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.mapper.BankCardMapper;
 import xyz.douzhan.bank.po.BankInfo;
@@ -25,8 +25,8 @@ import xyz.douzhan.bank.properties.BizProperties;
 import xyz.douzhan.bank.service.BankCardService;
 import xyz.douzhan.bank.service.BankInfoService;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
-import xyz.douzhan.bank.service.PhoneAccountService;
 import xyz.douzhan.bank.utils.CommonBizUtil;
+import xyz.douzhan.bank.utils.CypherUtil;
 import xyz.douzhan.bank.utils.DomainBizUtil;
 
 import java.util.ArrayList;
@@ -45,7 +45,6 @@ import java.util.List;
 @RequiredArgsConstructor
 public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> implements BankCardService {
     private final BizProperties bizProperties;
-//    private final PhoneAccountService phoneAccountService;
     private  final BankInfoService bankInfoService;
     private final BankPhoneBankRefService bankPhoneBankRefService;
     private static final String PHONE_NUMBER="phoneNumber";
@@ -81,7 +80,9 @@ public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> i
     @Transactional
     public void createBankcardAccount(Bankcard bankcardInfo, Long phoneAccountId) {
         //查询手机账户获取用户id
-        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, phoneAccountId).select(PhoneAccount::getUserInfoId).one();
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class)
+                .eq(PhoneAccount::getId, phoneAccountId)
+                .select(PhoneAccount::getUserInfoId).one();
         if (phoneAccount==null){
             throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
         }
@@ -90,34 +91,36 @@ public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> i
         Long userInfoId = phoneAccount.getUserInfoId();
         Bankcard bankcard = new Bankcard();
         BeanUtils.copyProperties(bankcardInfo,bankcard);
+        bankcard.setPassword(CypherUtil.encryptSM4(bankcard.getPassword()));
         bankcard.setUserId(userInfoId);
         //设置状态
         bankcard.setStatus(BankcardStatus.NOT_ACTIVATED);
         //默认余额
         bankcard.setBalance(BizConstant.DEFAULT_BALANCE);
         //获取开户行信息
-        BankInfo bankInfo = bankInfoService.getOne(Wrappers.lambdaQuery(BankInfo.class).eq(BankInfo::getInstitutionCode, bizProperties.getInstitutionCode()));
+        BankInfo bankInfo = bankInfoService.getOne(Wrappers.lambdaQuery(BankInfo.class)
+                .eq(BankInfo::getInstitutionCode, bizProperties.getInstitutionCode()));
         if (bankInfo==null){
             throw new BizException(BizExceptionConstant.INVALID_INSTITUTION_CODE);
         }
         bankcard.setBankInfoId(bankInfo.getId());
         bankcard.setMedium(BizConstant.HAS_NOT_ENTITY);
-
+        bankcard.setVersion(0);
+        bankcard.setDeleted(0);
         baseMapper.insert(bankcard);
-
+        // 生成卡号
         String cardNum = genCardNum(bankcard.getId(), bankcard.getType());
-        //存入minio文件系统，需要再取出来
-        HashMap<String, String> map = CommonBizUtil.getTruncateAndHashPart(cardNum);
-        bankcard.setHash(map.get(BizConstant.HASH_NUM));
-        bankcard.setNumber(map.get(BizConstant.TRUNCATE_REMAIN_NUM));
+        //设置卡号
+        bankcard.setNumber(cardNum);
 
         baseMapper.updateById(bankcard);
         //建立银行卡账户和手机账户联系
         BankPhoneBankRef bankPhoneBankRef = new BankPhoneBankRef();
         bankPhoneBankRef.setAccountId(bankcard.getId());
         bankPhoneBankRef.setPhoneAccountId(phoneAccountId);
-        bankPhoneBankRef.setPayPWD(bankcard.getPassword());
+        bankPhoneBankRef.setPayPWD(CypherUtil.encryptSM4(bankcard.getPassword()));
         bankPhoneBankRef.setType(bankcard.getType());
+        bankPhoneBankRef.setDefaultAccount(BizConstant.IS_NOT_DEFAULT_ACCOUNT);
         bankPhoneBankRefService.save(bankPhoneBankRef);
     }
 
@@ -194,15 +197,15 @@ public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> i
      * @return
      */
     @Override
-    public ResponseResult getFirstAccount(String phoneNumber) {
+    public Long getFirstAccount(String phoneNumber) {
         Bankcard bankcard = baseMapper.selectOne(Wrappers.lambdaQuery(Bankcard.class)
                 .eq(Bankcard::getPhoneNumber, phoneNumber)
                 .eq(Bankcard::getType, AccountType.FIRST.getValue())
                 .select(Bankcard::getId));
         if (bankcard == null) {
-            return ResponseResult.error().message(BizConstant.REFUSE_TO_REGISTER_A_RESPONSE);
+            throw new AuthenticationException(BizConstant.REFUSE_TO_REGISTER_A_RESPONSE);
         }
-        return ResponseResult.success(bankcard.getBankcardId());
+        return bankcard.getId();
     }
 
     /**
@@ -235,10 +238,47 @@ public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> i
      * @return
      */
     @Override
-    public ResponseResult getBankcardNumber(Long bankcardId) {
+    public String getBankcardNumber(Long bankcardId) {
+        Bankcard bankcard = baseMapper.selectOne(Wrappers.lambdaQuery(Bankcard.class).eq(Bankcard::getId, bankcardId).select(Bankcard::getNumber));
+        if (bankcard==null){
+            throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
+        }
+        return bankcard.getNumber();
+    }
 
-        // TODO 待完成
-        return null;
+    /**
+     * 注销银行卡账户
+     *
+     * @param bankcardId
+     */
+    @Override
+    @Transactional
+    public void deleteAccount(Long bankcardId) {
+        Bankcard bankcard = baseMapper.selectById(bankcardId);
+        if (bankcard==null) {
+            throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
+        }
+
+        boolean condition1=bankcard.getMedium()==BizConstant.HAS_NOT_ENTITY&&
+                (bankcard.getType()==AccountType.SECOND.getValue()||
+                bankcard.getType()==AccountType.THIRD.getValue());
+        boolean condition2=(bankcard.getMedium()==BizConstant.HAS_ENTITY)&&
+                (bankcard.getBalance()==BizConstant.DEFAULT_BALANCE)&&
+                (bankcard.getType()==AccountType.SECOND.getValue());
+        if (condition1){// 无实体的电子账户可以销户
+            Bankcard bindBankcard = baseMapper.selectById(bankcard.getBankcardId());
+            long balance = bindBankcard.getBalance() + bankcard.getBalance();
+            bankcard.setBalance(balance);
+            baseMapper.updateById(bankcard);// 提现
+            bankPhoneBankRefService.removeById(bankcardId); //删除关联
+            baseMapper.deleteById(bankcardId); // 删除账户
+        }else if (condition2){ // 有实体但无存款的二类账户可以销户
+             bankPhoneBankRefService.removeById(bankcardId); //删除关联
+            baseMapper.deleteById(bankcardId); // 删除账户
+        }else {
+            throw new BizException(BizExceptionConstant.INVALID_LOGOUT_CONDITION);
+        }
+
     }
 
     /**
@@ -251,8 +291,8 @@ public class BankCardServiceImpl extends ServiceImpl<BankCardMapper, Bankcard> i
                 .append(bizProperties.getIIN().get(0))//IIN
                 .append(String.format("%02d", type))//bizType
                 .append(bizProperties.getRegionCode())//regionCode
-                .append(String.format("%08d", id))//sequenceNumber
+                .append(String.format("%07d", id))//sequenceNumber
                 .toString();
-        return CommonBizUtil.genVerifyBitByLuhn(part)+part;
+        return part+CommonBizUtil.genVerifyBitByLuhn(part);
     }
 }

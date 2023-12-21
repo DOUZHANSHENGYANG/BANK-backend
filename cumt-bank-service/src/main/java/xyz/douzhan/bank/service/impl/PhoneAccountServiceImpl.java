@@ -6,12 +6,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.BeanUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.douzhan.bank.constants.*;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.dto.LoginDTO;
+import xyz.douzhan.bank.dto.LoginInfoRedis;
 import xyz.douzhan.bank.dto.RegisterDTO;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.enums.AccountType;
@@ -22,7 +24,6 @@ import xyz.douzhan.bank.mapper.PhoneAccountMapper;
 import xyz.douzhan.bank.po.BankPhoneBankRef;
 import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.po.UserInfo;
-import xyz.douzhan.bank.dto.LoginInfoRedis;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
 import xyz.douzhan.bank.service.PhoneAccountService;
 import xyz.douzhan.bank.service.UserInfoService;
@@ -50,13 +51,13 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     /**
      * 修改手机号
      *
-     * @param phoneAccountId
      * @param phoneNumber
      * @return
      */
     @Override
     @Transactional
-    public ResponseResult updatePhone(Long phoneAccountId, String phoneNumber) {
+    public ResponseResult updatePhone( String phoneNumber) {
+        Long phoneAccountId=UserContext.getContext();
         PhoneAccount phoneAccount = new PhoneAccount();
         phoneAccount.setId(phoneAccountId);
         phoneAccount.setPhoneNumber(phoneNumber);
@@ -67,7 +68,6 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     /**
      * 根据id类型修改密码
      *
-     * @param phoneAccountId
      * @param type
      * @param password
      * @param oldPassword
@@ -75,16 +75,18 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
      */
     @Override
     @Transactional
-    public ResponseResult modifyPassword(Long phoneAccountId, Integer type, String password, String oldPassword) {
+    public ResponseResult modifyPassword( Integer type, String password, String oldPassword) {
         //检验参数非空
-        if (phoneAccountId == null && type == null && password == null && oldPassword == null) {
+        if ( type == null && password == null && oldPassword == null) {
             throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //检验类型参数合法性
         if (type < 0 || type > 1) {
             throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
-
+        oldPassword=CypherUtil.decryptSM4(oldPassword);
+        password=CypherUtil.decryptSM4(password);
+        Long phoneAccountId=UserContext.getContext();
         //修改账号密码
         if (type == 0) {
             //查询密码
@@ -96,7 +98,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
                 throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
             }
             //比较密码是否正确
-            if (StrUtil.equals(CypherUtil.digest(Long.toString(phoneAccountId), oldPassword), account.getAccountPWD())) {
+            if (!StrUtil.equals(oldPassword, account.getAccountPWD())) {
                 throw new BizException(BizExceptionConstant.OLD_ACCOUNT_PWD_ERROR);
             }
             //校验新密码合法性
@@ -128,8 +130,8 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
                 throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
             }
             //比较密码是否正确
-            if (StrUtil.equals(CypherUtil.digest(Long.toString(phoneAccountId), oldPassword), phoneBankRef.getPayPWD())) {
-                throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
+            if (!StrUtil.equals( oldPassword, phoneBankRef.getPayPWD())) {
+                throw new BizException(BizExceptionConstant.OLD_PAY_PWD_ERROR);
             }
             //校验长度
             if (password.length() != 6) {
@@ -151,22 +153,23 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     /**
      * 重置密码
      *
-     * @param phoneAccountId
      * @param type
      * @param password
      * @return
      */
     @Override
     @Transactional
-    public ResponseResult resetPassword(Long phoneAccountId, Integer type, String password) {
+    public ResponseResult resetPassword( Integer type, String password) {
         //检验参数非空
-        if (phoneAccountId == null && type == null && password == null) {
+        if ( type == null && password == null) {
             throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
         //检验类型参数合法性
         if (type < 0 || type > 1) {
             throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
         }
+        password=CypherUtil.decryptSM4(password);
+        Long phoneAccountId=UserContext.getContext();
         //修改账号密码
         if (type == 0) {
             //校验新密码合法性
@@ -210,11 +213,11 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     /**
      * 注销账户
      *
-     * @param phoneAccountId
      */
     @Override
     @Transactional
-    public void deleteAccount(Long phoneAccountId) {
+    public void deleteAccount() {
+        Long phoneAccountId=UserContext.getContext();
         //删除手机银行账户关联表
         bankPhoneBankRefService.remove(Wrappers.lambdaQuery(BankPhoneBankRef.class).eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId));
         //删除银行表
@@ -222,10 +225,12 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     }
 
     @Override
+    @Transactional
     public String register(RegisterDTO registerDTO) {
         //创建手机银行账户信息
         PhoneAccount phoneAccount = new PhoneAccount();
-        phoneAccount.setAccountPWD(registerDTO.getAccountPWD());
+        BeanUtils.copyProperties(registerDTO,phoneAccount);
+
         //查询用户信息id
         UserInfo userInfo = userInfoService.getOne(
                 Wrappers.lambdaQuery(UserInfo.class)
@@ -235,13 +240,15 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
             throw new AuthenticationException(AuthExceptionConstant.DOCUMENTS_ERROR);
         }
         phoneAccount.setUserInfoId(userInfo.getId());
+        phoneAccount.setAccountPWD(CypherUtil.decryptSM4(phoneAccount.getAccountPWD()));
         baseMapper.insert(phoneAccount);
         //创建I类账户和手机银行账户关联
         BankPhoneBankRef bankPhoneBankRef = new BankPhoneBankRef();
-        bankPhoneBankRef.setPayPWD(CypherUtil.digest(Long.toString(phoneAccount.getId()),registerDTO.getPayPWD()));
+        bankPhoneBankRef.setPayPWD(CypherUtil.decryptSM4(registerDTO.getPayPWD()));
         bankPhoneBankRef.setAccountId(registerDTO.getFirstBankcardId());
         bankPhoneBankRef.setType(AccountType.FIRST.getValue());
         bankPhoneBankRef.setDefaultAccount(BizConstant.IS_DEFAULT_ACCOUNT);
+        bankPhoneBankRef.setPhoneAccountId(phoneAccount.getId());
         bankPhoneBankRefService.save(bankPhoneBankRef);
 
         String token=null;
@@ -320,7 +327,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
             return authPwdAndPostLogin(
                     phoneAccount == null || !StrUtil.equals(
                             phoneAccount.getAccountPWD(),
-                            CypherUtil.digest(Long.toString(phoneAccount.getId()), password)), phoneAccount);
+                            CypherUtil.decryptSM4(password)), phoneAccount);
         }
         //证件号密码
         if (type == 2) {
@@ -343,7 +350,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
             return authPwdAndPostLogin(
                     phoneAccount == null || !StrUtil.equals(
                             phoneAccount.getAccountPWD(),
-                            CypherUtil.digest(Long.toString(phoneAccount.getId()), password)), phoneAccount);
+                            CypherUtil.decryptSM4(password)), phoneAccount);
         }
 
         //类型不合法

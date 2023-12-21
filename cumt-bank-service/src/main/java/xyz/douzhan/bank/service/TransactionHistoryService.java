@@ -1,6 +1,7 @@
 package xyz.douzhan.bank.service;
 
 import xyz.douzhan.bank.dto.TransactionDetailsDTO;
+import xyz.douzhan.bank.dto.result.PageResponseResult;
 import xyz.douzhan.bank.po.TransactionHistory;
 import com.baomidou.mybatisplus.extension.service.IService;
 
@@ -21,5 +22,5 @@ public interface TransactionHistoryService extends IService<TransactionHistory> 
      * @param detailsDTO
      * @return
      */
-    List<TransactionHistory> getTransactionDetails(TransactionDetailsDTO detailsDTO);
+    PageResponseResult getTransactionDetails(TransactionDetailsDTO detailsDTO);
 }

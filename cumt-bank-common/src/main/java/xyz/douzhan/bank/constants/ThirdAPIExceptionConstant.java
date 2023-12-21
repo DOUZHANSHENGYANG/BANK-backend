@@ -8,7 +8,7 @@ package xyz.douzhan.bank.constants;
  * @since JDK 17
  */
 public class ThirdAPIExceptionConstant {
-    public static final String ALIYUN_UPLOAD_AVATAR_FAILED ="阿里云上传图片失败";
-    public static final String BAIDU_FACE_AUTH_FAILED="阿里云上传图片失败";
+    public static final String ALIYUN_UPLOAD_AVATAR_FAILED ="阿里云上传图片异常";
+    public static final String BAIDU_FACE_AUTH_FAILED="百度人脸认证异常";
     public static final String BAIDU_OCR_ERROR = "百度ocr识别异常";
 }

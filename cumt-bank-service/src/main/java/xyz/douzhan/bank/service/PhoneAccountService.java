@@ -49,35 +49,32 @@ public interface PhoneAccountService extends IService<PhoneAccount> {
     /**
      * 根据id修改手机号
      *
-     * @param phoneAccountId
      * @param phoneNumber
      * @return
      */
-    ResponseResult updatePhone(Long phoneAccountId, String phoneNumber);
+    ResponseResult updatePhone( String phoneNumber);
 
     /**
      * 根据id类型修改密码
      *
-     * @param phoneAccountId
      * @param type
      * @param password
      * @param oldPassword
      * @return
      */
-    ResponseResult modifyPassword(Long phoneAccountId, Integer type, String password, String oldPassword);
+    ResponseResult modifyPassword(Integer type, String password, String oldPassword);
     /**
      * 根据id类型重置密码
      *
-     * @param phoneAccountId
      * @param type
      * @param password
      * @return
      */
-    ResponseResult resetPassword(Long phoneAccountId, Integer type, String password);
+    ResponseResult resetPassword(Integer type, String password);
 
     /**
      * 注销账户
-     * @param phoneAccountId
+     *
      */
-    void deleteAccount(Long phoneAccountId);
+    void deleteAccount();
 }

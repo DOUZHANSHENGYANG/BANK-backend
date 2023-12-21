@@ -20,7 +20,7 @@ import lombok.Setter;
  */
 @Getter
 @Setter
-@TableName("phone_payer")
+@TableName(value = "phone_payer")
 @Schema(description= "PhonePayer对象" )
 public class PhonePayer implements Serializable {
 
@@ -31,16 +31,16 @@ public class PhonePayer implements Serializable {
     @TableId(value = "id", type = IdType.AUTO)
     private Integer id;
 
-    @Schema(description ="用户id")
+    @Schema(description ="手机账户id")
     @TableField("user_id")
-    private Integer userId;
+    private Long phoneAccountId;
 
     @Schema(description ="转账卡号")
-    @TableField("bank_num")
+    @TableField(value = "bank_num")
     private String bankNum;
 
     @Schema(description ="转账人名字")
-    @TableField("name")
+    @TableField(value = "name")
     private String name;
 
     @Schema(description ="创建时间")

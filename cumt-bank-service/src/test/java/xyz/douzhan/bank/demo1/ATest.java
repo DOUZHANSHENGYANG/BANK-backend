@@ -1,12 +1,16 @@
 package xyz.douzhan.bank.demo1;
 
+import okhttp3.MediaType;
+import okhttp3.Request;
+import okhttp3.RequestBody;
+import okhttp3.Response;
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 import xyz.douzhan.bank.utils.CypherUtil;
+import xyz.douzhan.bank.utils.HttpClientUtil;
 
 
-import java.security.KeyPair;
-import java.util.Arrays;
+
 
 /**
  * 一些声明信息
@@ -18,11 +22,31 @@ import java.util.Arrays;
  */
 @SpringBootTest
 public class ATest {
+    private static  String APP_ID="44513880";
+    private static  String API_KEY="YXtFzXr6ssK8eZoPPDKDTi2w";
+    private static  String SECRET_KEY="y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox";
     @Test
     public void testSM4Encode()throws Exception{
-        String s = CypherUtil.encryptSM4("082811");
-        System.out.println(s);
-        System.out.println(CypherUtil.decryptSM4(s));
+        System.out.println("CypherUtil.encryptSM4(\"张三\") = " + CypherUtil.encryptSM4("张三"));
+        System.out.println("CypherUtil.encryptSM4(\"zhangSan\") = " + CypherUtil.encryptSM4("zhangSan"));
+        System.out.println("CypherUtil.encryptSM4(\"431382200408280455\") = " + CypherUtil.encryptSM4("431382200408280455"));
+        System.out.println("CypherUtil.encryptSM4(\"16680284176\") = " + CypherUtil.encryptSM4("16680284176"));
+        System.out.println("CypherUtil.encryptSM4(\"082127\") = " + CypherUtil.encryptSM4("082127"));
+        System.out.println("CypherUtil.encryptSM4(\"zhangsan123\") = " + CypherUtil.encryptSM4("zhangsan123"));
+        System.out.println("CypherUtil.encryptSM4(\"6223330111000000103\") = " + CypherUtil.encryptSM4("6223330111000000103"));
+    }
+    @Test
+    public void get()throws Exception{
+        MediaType mediaType = MediaType.parse("application/json");
+        RequestBody body = RequestBody.create(mediaType, "");
+        Request request = new Request.Builder()
+                .url("https://aip.baidubce.com/oauth/2.0/token?client_id=YXtFzXr6ssK8eZoPPDKDTi2w&client_secret=y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox&grant_type=client_credentials")
+                .method("POST", body)
+                .addHeader("Content-Type", "application/json")
+                .addHeader("Accept", "application/json")
+                .build();
+        Response response = HttpClientUtil.getHTTP_CLIENT().newCall(request).execute();
+        System.out.println(response.body().string());
     }
 
 

@@ -19,15 +19,17 @@ import xyz.douzhan.bank.dto.result.ResponseResult;
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
-    @ExceptionHandler(AuthenticationException.class)
-    public ResponseResult authenticationExceptionHandler(AuthenticationException e) {
-        log.error("发生了认证异常：信息为{}", e.getMessage());
-        return ResponseResult.error().message(e.getMessage()).code(403);
-    }
+
     @ExceptionHandler(BizException.class)
     public ResponseResult bizExceptionHandler(BizException e) {
         log.error("发生了业务：信息为{}", e.getMessage());
         return ResponseResult.error().message(e.getMessage()).code(400);
+    }
+
+    @ExceptionHandler(AuthenticationException.class)
+    public ResponseResult authenticationExceptionHandler(AuthenticationException e) {
+        log.error("发生了认证异常：信息为{}", e.getMessage());
+        return ResponseResult.error().message(e.getMessage()).code(403);
     }
 
     @ExceptionHandler(ThirdPartyAPIException.class)

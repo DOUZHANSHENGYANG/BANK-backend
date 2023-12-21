@@ -2,15 +2,11 @@ package xyz.douzhan.bank.utils;
 
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.crypto.digest.SM3;
-import org.apache.http.cookie.SM;
-import xyz.douzhan.bank.constants.BizConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.exception.BizException;
-import xyz.douzhan.bank.properties.BizProperties;
 
 import java.nio.charset.StandardCharsets;
 import java.util.Collection;
-import java.util.HashMap;
 
 /**
  * 一些声明信息
@@ -49,13 +45,14 @@ public class CommonBizUtil {
 
     /**
      * 根据luhn算法生成校验位
+     *
      * @param part
      * @return
      */
-    public static String genVerifyBitByLuhn(String part){
+    public static int genVerifyBitByLuhn(String part){
         boolean flag=false;
         int sum=0;
-        for (int i = part.length()-1; i >=0 ; i++) {
+        for (int i = part.length()-1; i >=0 ; i--) {
             int num = Integer.parseInt(String.valueOf(part.charAt(i)));
             if (flag){
                 num=num*2;
@@ -69,7 +66,7 @@ public class CommonBizUtil {
             }
             flag=!flag;
         }
-        return part+(sum*9)%10;
+        return (sum*9)%10;
     }
     public static Boolean verifyByLuhn(String number){
         boolean flag=true;
@@ -91,16 +88,16 @@ public class CommonBizUtil {
         return sum%10==0;
     }
 
-    /**
-     *获取截断版本和hash结果
-     * @param cardNum
-     */
-    public static HashMap<String,String> getTruncateAndHashPart(String cardNum) {
-        HashMap<String, String> map = new HashMap<>();
-        map.put(BizConstant.TRUNCATE_REMAIN_NUM, cardNum.substring(0,6)+cardNum.substring(15));
-        map.put(BizConstant.HASH_NUM,hashedPart(cardNum));
-        return map;
-    }
+//    /**
+//     *获取截断版本和hash结果
+//     * @param cardNum
+//     */
+//    public static HashMap<String,String> getTruncateAndHashPart(String cardNum) {
+//        HashMap<String, String> map = new HashMap<>();
+//        map.put(BizConstant.TRUNCATE_REMAIN_NUM, cardNum.substring(0,6)+cardNum.substring(15));
+//        map.put(BizConstant.HASH_NUM,hashedPart(cardNum));
+//        return map;
+//    }
     public static String hashedPart(String cardNum){
         //用卡号后四位做盐值
         SM3 sm3 = new SM3(cardNum.substring(15).getBytes(StandardCharsets.UTF_8), 4);
