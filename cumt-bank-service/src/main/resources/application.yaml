@@ -10,7 +10,7 @@ spring:
   application:
     name: bank
   profiles:
-    active: pro
+    active: dev
 #  devtools:
 #    restart:
 #      enabled: true
@@ -66,7 +66,7 @@ mybatis-plus: # mp配置
 
 logging: # 日志
   level:
-    xyz.douzhan: info
+    xyz.douzhan: debug
   pattern:
     dateformat: HH:mm:ss:SSS
   file:

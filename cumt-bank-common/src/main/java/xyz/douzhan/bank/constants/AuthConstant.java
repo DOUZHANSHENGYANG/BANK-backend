@@ -16,8 +16,5 @@ public class AuthConstant {
             List.of("/doc.html", "/swagger/**", "/swagger-ui.html", "/swagger-resources/**",
                     "/webjars/**", "/v2/**", "/v2/api-docs-ext/**", "/v3/api-docs/**",
                     "/bank/mobile/account/login/up","/bank/mobile/account/login/sms", "/bank/mobile/account/register", "/bank/common/auth/**",
-                    "/bank/bank/bankcard/first");
-
-    public static final String IMG_FRONT = "front";
-    public static final String IMG_BACK = "back";
+                    "/bank/bank/bankcard/first,/bank/mobile/account/login/test");
 }

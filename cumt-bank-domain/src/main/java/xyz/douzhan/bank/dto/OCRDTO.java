@@ -14,8 +14,5 @@ import lombok.Data;
 @Data
 @Schema(description = "图像识别DTO")
 public class OCRDTO {
-    @Schema(description = "类型 0为银行卡 1身份证")
-    private Integer type;
-    @Schema(description = "证件的朝向 0正面 1反面")
-    private Integer side;
+
 }

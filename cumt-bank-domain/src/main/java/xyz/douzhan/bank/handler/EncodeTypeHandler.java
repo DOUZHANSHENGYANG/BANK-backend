@@ -23,7 +23,7 @@ public class EncodeTypeHandler implements TypeHandler<String> {
 
     @Override
     public void setParameter(PreparedStatement ps, int i, String parameter, JdbcType jdbcType) throws SQLException {
-        String encrypt = CypherUtil.encryptSM4(parameter);
+        String encrypt = CypherUtil.encrypt(parameter);
         ps.setString(i,encrypt);
     }
 
@@ -36,7 +36,7 @@ public class EncodeTypeHandler implements TypeHandler<String> {
      */
     @Override
     public String getResult(ResultSet rs, String columnName) throws SQLException {
-        return CypherUtil.decryptSM4(rs.getString(columnName));
+        return CypherUtil.decrypt(rs.getString(columnName));
     }
 
     /**
@@ -48,11 +48,11 @@ public class EncodeTypeHandler implements TypeHandler<String> {
      */
     @Override
     public String getResult(ResultSet rs, int columnIndex) throws SQLException {
-        return CypherUtil.decryptSM4(rs.getString(columnIndex));
+        return CypherUtil.decrypt(rs.getString(columnIndex));
     }
 
     @Override
     public String getResult(CallableStatement cs, int columnIndex) throws SQLException {
-        return CypherUtil.decryptSM4(cs.getString(columnIndex));
+        return CypherUtil.decrypt(cs.getString(columnIndex));
     }
 }

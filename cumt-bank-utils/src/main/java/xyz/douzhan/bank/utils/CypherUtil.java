@@ -9,6 +9,7 @@ import cn.hutool.crypto.SecureUtil;
 import cn.hutool.crypto.asymmetric.KeyType;
 import cn.hutool.crypto.asymmetric.SM2;
 import cn.hutool.crypto.digest.SM3;
+import cn.hutool.crypto.symmetric.AES;
 import cn.hutool.crypto.symmetric.SM4;
 import cn.hutool.jwt.signers.JWTSigner;
 import lombok.extern.slf4j.Slf4j;
@@ -40,11 +41,12 @@ public class CypherUtil {
      *
      * @return
      */
-    public static SM4 getSM4() {
-        return new SM4(
-                Mode.CBC, Padding.ZeroPadding,
-                "abc1111111111333".getBytes(CharsetUtil.CHARSET_UTF_8),
-                "huiyinwobaailiya".getBytes(CharsetUtil.CHARSET_UTF_8));
+    public static AES getAES() {
+        return  new AES(Mode.CTS, Padding.PKCS5Padding, "0CoJUm6Qyw8W8jud".getBytes(), "0102030405060708".getBytes());
+//                new SM4(
+//                Mode.CBC, Padding.ZeroPadding,
+//                "abc1111111111333".getBytes(CharsetUtil.CHARSET_UTF_8),
+//                "huiyinwobaailiya".getBytes(CharsetUtil.CHARSET_UTF_8));
     }
 
     /**
@@ -53,9 +55,10 @@ public class CypherUtil {
      * @param plainText
      * @return
      */
-    public static String encryptSM4(String plainText) {
-        SM4 sm4 = getSM4();
-        return Base64.encode(sm4.encrypt(plainText));
+    public static String encrypt(String plainText) {
+
+//        SM4 sm4 = getSM4();Base64.encode(sm4.encrypt(plainText));
+        return plainText;
     }
 
     /**
@@ -64,9 +67,8 @@ public class CypherUtil {
      * @param cipherText
      * @return
      */
-    public static String decryptSM4(String cipherText) {
-        SM4 sm4 = getSM4();
-        return sm4.decryptStr(Base64.decode(cipherText), CharsetUtil.CHARSET_UTF_8);
+    public static String decrypt(String cipherText) {
+        return cipherText;
     }
 
     /**

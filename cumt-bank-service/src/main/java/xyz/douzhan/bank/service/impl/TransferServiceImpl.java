@@ -1,10 +1,7 @@
 package xyz.douzhan.bank.service.impl;
 
-import cn.hutool.core.collection.CollUtil;
-import com.alibaba.fastjson2.JSONObject;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
-import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.baomidou.mybatisplus.extension.toolkit.Db;
 import lombok.RequiredArgsConstructor;
@@ -15,8 +12,7 @@ import xyz.douzhan.bank.constants.BizConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.constants.RedisConstant;
 import xyz.douzhan.bank.constants.TransferConstant;
-import xyz.douzhan.bank.dto.DigitalReceiptDTO;
-import xyz.douzhan.bank.dto.result.PageResponseResult;
+import xyz.douzhan.bank.enums.AccountType;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.mapper.TransferMapper;
 import xyz.douzhan.bank.po.Bankcard;
@@ -24,20 +20,17 @@ import xyz.douzhan.bank.po.TransactionHistory;
 import xyz.douzhan.bank.po.Transfer;
 import xyz.douzhan.bank.po.UserInfo;
 import xyz.douzhan.bank.properties.BizProperties;
-import xyz.douzhan.bank.service.AsyncService;
 import xyz.douzhan.bank.service.BankCardService;
 import xyz.douzhan.bank.service.TransactionHistoryService;
 import xyz.douzhan.bank.service.TransferService;
+import xyz.douzhan.bank.utils.CypherUtil;
 import xyz.douzhan.bank.utils.DomainBizUtil;
-import xyz.douzhan.bank.utils.QRCodeUtil;
 import xyz.douzhan.bank.utils.RedisUtil;
 import xyz.douzhan.bank.vo.SupportBankVO;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -57,15 +50,46 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
 
     @Override
     public Long createOrder(Transfer transfer) {
+        Integer money = transfer.getMoney();
         //获取类型
         Integer type = transfer.getType();
 
         if (TransferConstant.INTRA_BANK.compareTo(type) == 0) {//行内转账
-            Bankcard bankcard = bankCardService.getOne(Wrappers.lambdaQuery(Bankcard.class).eq(Bankcard::getNumber, transfer.getTransfereeCardNum()).select(Bankcard::getId));
-            UserInfo userInfo = Db.lambdaQuery(UserInfo.class).eq(UserInfo::getName, transfer.getTransfereeName()).select(UserInfo::getId).one();
-            if (bankcard==null||userInfo==null){
-                throw new BizException(BizExceptionConstant.INVALID_TRANSFEREE_INFO);
+
+            transfer.setTransferorCardNum(CypherUtil.encrypt(transfer.getTransferorCardNum()));
+            transfer.setTransfereeCardNum(CypherUtil.encrypt(transfer.getTransfereeCardNum()));
+            transfer.setTransferorName(CypherUtil.encrypt(transfer.getTransferorName()));
+            transfer.setTransfereeName(CypherUtil.encrypt(transfer.getTransfereeName()));
+
+            Bankcard transferorAccount = bankCardService.getOne(
+                    new LambdaQueryWrapper<Bankcard>()
+                            .eq(Bankcard::getNumber, transfer.getTransferorCardNum())
+                            .select(Bankcard::getId, Bankcard::getBalance,Bankcard::getType));
+            Long transferorAccountBalance = transferorAccount.getBalance();
+            if (transferorAccountBalance < money) {
+                throw new BizException(BizExceptionConstant.ACCOUNT_BALANCE_NOT_ENOUGH);
             }
+
+            Bankcard transfereeAccount = bankCardService.getOne(
+                    new LambdaQueryWrapper<Bankcard>()
+                            .eq(Bankcard::getNumber, transfer.getTransfereeCardNum())
+                            .select(Bankcard::getId, Bankcard::getBalance,Bankcard::getType));
+            Long transfereeAccountBalance = transfereeAccount.getBalance();
+            if (transfereeAccount==null){
+                    throw new BizException(BizExceptionConstant.INVALID_TRANSFEREE_INFO);
+            }
+            if (transfereeAccount.getType()== AccountType.THIRD.getValue()&&(money+transfereeAccountBalance)>200000){
+                throw new BizException("三类账户余额不能超过2000");
+            }
+            transferorAccountBalance = transferorAccountBalance - money;
+            transfereeAccountBalance = transfereeAccountBalance + money;
+
+            transferorAccount.setBalance(transferorAccountBalance);
+            transfereeAccount.setBalance(transfereeAccountBalance);
+
+            bankCardService.updateById(transferorAccount);
+            bankCardService.updateById(transfereeAccount);
+
             //设置转账订单信息
             setTransferInfo(transfer);
             // 新增订单
@@ -87,7 +111,7 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
      */
     @Override
     @Transactional
-    public void completeOrder(Long orderId, Integer status, Integer money) {
+    public void completeOrder(Long orderId, Integer status) {
         //校验状态
         if (!(Objects.equals(status, TransferConstant.FAILED_FINISH) || status.equals(TransferConstant.SUCCESS_FINISH))) {
             throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
@@ -99,44 +123,35 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         if (transfer == null||transfer.getStatus()!=TransferConstant.ONGOING_STATUS) {
             throw new BizException(BizExceptionConstant.ORDER_STATUS_UPDATE_FAILED);
         }
-        //转账
-        transfer.setMoney(money);
-        doTransfer(status, money, transfer);
+        transfer.setStatus(status);
+        if (status==TransferConstant.FAILED_FINISH){
+            Bankcard transferorAccount = bankCardService.getOne(
+                    new LambdaQueryWrapper<Bankcard>()
+                            .eq(Bankcard::getNumber, transfer.getTransferorCardNum())
+                            .select(Bankcard::getId, Bankcard::getBalance));
+            Bankcard transfereeAccount = bankCardService.getOne(
+                    new LambdaQueryWrapper<Bankcard>()
+                            .eq(Bankcard::getNumber, transfer.getTransfereeCardNum())
+                            .select(Bankcard::getId, Bankcard::getBalance));
+
+            Long transferorAccountBalance = transferorAccount.getBalance();
+            Long transfereeAccountBalance = transfereeAccount.getBalance();
+
+            transferorAccountBalance = transferorAccountBalance + transfer.getMoney();
+            transfereeAccountBalance = transfereeAccountBalance - transfer.getMoney();
+
+            transferorAccount.setBalance(transferorAccountBalance);
+            transfereeAccount.setBalance(transfereeAccountBalance);
+
+            bankCardService.updateById(transferorAccount);
+            bankCardService.updateById(transfereeAccount);
+
+        }
+        baseMapper.updateById(transfer);
         //新增交易记录
         insertHistory(transfer);
     }
 
-    private void doTransfer(Integer status, Integer money, Transfer transfer) {
-        String transferorCardNum = transfer.getTransferorCardNum();
-        String transfereeCardNum = transfer.getTransfereeCardNum();
-
-        Bankcard transferorAccount = bankCardService.getOne(
-                new LambdaQueryWrapper<Bankcard>()
-                        .eq(Bankcard::getNumber, transferorCardNum)
-                        .select(Bankcard::getId, Bankcard::getBalance));
-        Long transferorAccountBalance = transferorAccount.getBalance();
-        if (transferorAccountBalance < TransferConstant.ZERO_BALANCE) {
-            throw new BizException(BizExceptionConstant.ACCOUNT_BALANCE_NOT_ENOUGH);
-        }
-
-        Bankcard transfereeAccount = bankCardService.getOne(
-                new LambdaQueryWrapper<Bankcard>()
-                        .eq(Bankcard::getNumber, transfereeCardNum)
-                        .select(Bankcard::getId, Bankcard::getBalance));
-        Long transfereeAccountBalance = transfereeAccount.getBalance();
-
-        transferorAccountBalance = transferorAccountBalance - money;
-        transfereeAccountBalance = transfereeAccountBalance + money;
-
-        transferorAccount.setBalance(transferorAccountBalance);
-        transfereeAccount.setBalance(transfereeAccountBalance);
-
-        bankCardService.updateById(transferorAccount);
-        bankCardService.updateById(transfereeAccount);
-        //更新订单状态
-        transfer.setStatus(status);
-        baseMapper.updateById(transfer);
-    }
 
     /**
      * 新增交易记录
@@ -341,8 +356,6 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         transfer.setStatus(TransferConstant.ONGOING_STATUS);
         //设置渠道
         transfer.setChannel(BizConstant.PHONE_BANK_CHANNEL);
-        //设置渠道
-        transfer.setMoney(BizConstant.DEFAULT_MONEY);
         //设置订单号
         transfer.setOrderNum(genOrderNum(transfer));
     }

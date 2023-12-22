@@ -1,9 +1,12 @@
 package xyz.douzhan.bank.controller.common;
 
+import cn.hutool.core.convert.NumberWithFormat;
 import com.alibaba.fastjson2.JSONObject;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
@@ -11,6 +14,7 @@ import xyz.douzhan.bank.dto.OCRDTO;
 import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.service.AuthService;
+import xyz.douzhan.bank.utils.JWTUtil;
 import xyz.douzhan.bank.vo.ImgVerifyCodeVO;
 
 import java.util.Map;
@@ -50,51 +54,59 @@ public class AuthController {
         return ResponseResult.success();
     }
 
-    @PostMapping("/upload-doc")
-    @Operation(summary = "上传证件")
-    public ResponseResult uploadDocuments(
-            @RequestParam("frontFile") @Parameter(description = "证件正面图片") MultipartFile frontFile,
-            @RequestParam("backFile") @Parameter(description = "证件反面图片") MultipartFile backFile,
-            @RequestParam("firstAccountId") @Parameter(description = "I类账户id") Long firstAccountId) {
-        JSONObject result = authService.uploadDocuments(frontFile, backFile, firstAccountId);
-        return ResponseResult.success(result);
-    }
+//    @PostMapping("/upload-doc")
+//    @Operation(summary = "上传证件")
+//    public ResponseResult uploadDocuments(
+//            @RequestParam("frontFile") @Parameter(description = "证件正面图片") MultipartFile frontFile,
+//            @RequestParam("backFile") @Parameter(description = "证件反面图片") MultipartFile backFile,
+//            @RequestParam("firstAccountId") @Parameter(description = "I类账户id") Long firstAccountId) {
+//        JSONObject result = authService.uploadDocuments(frontFile, backFile, firstAccountId);
+//        return ResponseResult.success(result);
+//    }
 
-    @PostMapping("/ocr")
-    @Operation(summary = "图像识别")
-    public ResponseResult ocr(
-            @RequestBody @Parameter(description = "OCR实体") OCRDTO ocrdto,
-            @RequestParam("file") @Parameter(description = "图片文件") MultipartFile file
-    ) {
-        Map<String, Object> ocrResult = authService.ocr(ocrdto, file);
-        return ResponseResult.success(ocrResult);
-    }
+//    @PostMapping("/ocr")
+//    @Operation(summary = "图像识别")
+//    public ResponseResult ocr(
+//            @Parameter(description = "证件的朝向 0正面 1反面")
+//            @RequestParam("side") Integer side,
+//            @RequestParam("file") @Parameter(description = "图片文件") MultipartFile file
+//    ) {
+//        return ResponseResult.success( authService.ocr(side, file));
+//    }
 
-    @PostMapping("/face-temp")
-    @Operation(summary = "注册前的人脸认证 主要是没这样的接口只能笨着来")
-    public ResponseResult faceAuthTemp(
-            @RequestParam("frontFile") @Parameter(description = "证件正面照片") MultipartFile frontFile,
-            @RequestParam("liveFile") @Parameter(description = "实时人脸照片") MultipartFile liveFile
-    ) {
-        boolean result = authService.faceAuthTemp(frontFile, liveFile);
-        if (result) {
-            return ResponseResult.success();
-        } else {
-            return ResponseResult.error();
-        }
-    }
-    @PostMapping("/face")
-    @Operation(summary = "注册后的人脸认证")
-    public ResponseResult faceAuth(
-            @RequestParam("liveFile") @Parameter(description = "实时人脸照片") MultipartFile liveFile
-    ) {
-        Boolean result = authService.faceAuth(liveFile);
-        if (result) {
-            return ResponseResult.success();
-        } else {
-            return ResponseResult.error();
-        }
-    }
+//    @PostMapping("/face-temp")
+//    @Operation(summary = "注册前的人脸认证 主要是没这样的接口只能笨着来")
+//    public ResponseResult faceAuthTemp(
+//            @RequestParam("frontFile") @Parameter(description = "证件正面照片") MultipartFile frontFile,
+//            @RequestParam("liveFile") @Parameter(description = "实时人脸照片") MultipartFile liveFile
+//    ) {
+//        boolean result = authService.faceAuthTemp(frontFile, liveFile);
+//        if (result) {
+//            return ResponseResult.success();
+//        } else {
+//            return ResponseResult.error();
+//        }
+//    }
+
+//    @PostMapping("/face")
+//    @Operation(summary = "注册后的人脸认证")
+//    public ResponseResult faceAuth(
+//            @RequestParam("liveFile") @Parameter(description = "实时人脸照片") MultipartFile liveFile,
+//            HttpServletRequest request
+//    ) {
+//        String token = request.getHeader(JWTUtil.getJwtProperties().getTokenName()).substring(7);
+//        if (token==null||JWTUtil.parseToken(token)==null){
+//            return ResponseResult.error();
+//        }
+//        NumberWithFormat nf = (NumberWithFormat) JWTUtil.parseToken(token);
+//
+//        Boolean result = authService.faceAuth(liveFile,nf.longValue());
+//        if (result) {
+//            return ResponseResult.success();
+//        } else {
+//            return ResponseResult.error();
+//        }
+//    }
 
 
 }

@@ -36,7 +36,7 @@ public interface TransferService extends IService<Transfer> {
      * @param orderId
      * @param status
      */
-    void completeOrder(Long orderId, Integer status,Integer money);
+    void completeOrder(Long orderId, Integer status);
 
     /**
      * 获取电子回单

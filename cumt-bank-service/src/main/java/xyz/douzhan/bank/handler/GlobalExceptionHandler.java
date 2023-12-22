@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(BizException.class)
     public ResponseResult bizExceptionHandler(BizException e) {
-        log.error("发生了业务：信息为{}", e.getMessage());
+        log.error("发生了业务异常：信息为{}", e.getMessage());
         return ResponseResult.error().message(e.getMessage()).code(400);
     }
 
@@ -41,6 +41,6 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(Exception.class)
     public ResponseResult otherExceptionHandler(Exception e) {
         log.error("发生了其他不可预知异常：信息为{}", e.getMessage());
-        return ResponseResult.error().message("服务器异常").code(500);
+        return ResponseResult.error().message("服务器异常"+e.getMessage()).code(500);
     }
 }

@@ -31,13 +31,6 @@ public interface BankCardService extends IService<Bankcard> {
      */
     void createBankcardAccount(Bankcard bankcardInfo, Long phoneAccountId);
 
-    /**
-     * 根据手机账户id查询卡号和手机号
-     * @param phoneAccountId
-     * @param type
-     * @return
-     */
-    JSONObject getCardNumAndPhoneNumber(Long phoneAccountId, Integer type);
 
     /**
      * 根据手机号查询I类账户id

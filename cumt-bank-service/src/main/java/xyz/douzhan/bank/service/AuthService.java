@@ -2,7 +2,6 @@ package xyz.douzhan.bank.service;
 
 import com.alibaba.fastjson2.JSONObject;
 import org.springframework.web.multipart.MultipartFile;
-import xyz.douzhan.bank.dto.OCRDTO;
 import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.vo.ImgVerifyCodeVO;
 
@@ -32,38 +31,40 @@ public interface AuthService {
      */
     void validateVerifyCode(ValidateVerifyCodeDTO verifyCodeDTO) ;
 
-    /**
-     * 图像识别
-     *
-     * @param ocrdto
-     * @param file
-     * @return
-     */
-    Map<String, Object> ocr(OCRDTO ocrdto, MultipartFile file);
-
-    /**
-     * 上传证件
-     *
-     * @param frontFile
-     * @param backFile
-     * @param phoneNumber
-     * @return
-     */
-    JSONObject uploadDocuments(MultipartFile frontFile, MultipartFile backFile, Long phoneNumber);
-
-    /**
-     * 注册前的人脸认证
-     *
-     * @param frontFile
-     * @param liveFile
-     * @return
-     */
-    boolean faceAuthTemp(MultipartFile frontFile, MultipartFile liveFile);
-
-    /**
-     * 注册后的人脸认证
-     * @param liveFile
-     * @return
-     */
-    Boolean faceAuth(MultipartFile liveFile);
+//    /**
+//     * 图像识别
+//     *
+//     * @param side
+//     * @param file
+//     * @return
+//     */
+//    String ocr( Integer side, MultipartFile file);
+//
+//    /**
+//     * 上传证件
+//     *
+//     * @param frontFile
+//     * @param backFile
+//     * @param phoneNumber
+//     * @return
+//     */
+//    JSONObject uploadDocuments(MultipartFile frontFile, MultipartFile backFile, Long phoneNumber);
+//
+//    /**
+//     * 注册前的人脸认证
+//     *
+//     * @param frontFile
+//     * @param liveFile
+//     * @return
+//     */
+//    boolean faceAuthTemp(MultipartFile frontFile, MultipartFile liveFile);
+//
+//    /**
+//     * 注册后的人脸认证
+//     *
+//     * @param liveFile
+//     * @param l
+//     * @return
+//     */
+//    Boolean faceAuth(MultipartFile liveFile, long l);
 }

@@ -13,7 +13,6 @@ import xyz.douzhan.bank.constants.BizConstant;
 import xyz.douzhan.bank.constants.BizExceptionConstant;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.dto.AliasDTO;
-import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.mapper.BankPhoneBankRefMapper;
 import xyz.douzhan.bank.po.BankPhoneBankRef;
@@ -22,7 +21,6 @@ import xyz.douzhan.bank.service.BankPhoneBankRefService;
 import xyz.douzhan.bank.utils.CypherUtil;
 
 import java.util.List;
-import java.util.stream.Stream;
 
 /**
  * <p>
@@ -75,7 +73,8 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
         //修改旧的
         bankPhoneBankRef.setDefaultAccount(BizConstant.IS_NOT_DEFAULT_ACCOUNT);
         baseMapper.update(bankPhoneBankRef,
-                Wrappers.lambdaUpdate(BankPhoneBankRef.class).eq(BankPhoneBankRef::getAccountId, oldBankcardId));
+                Wrappers.lambdaUpdate(BankPhoneBankRef.class)
+                        .eq(BankPhoneBankRef::getAccountId, oldBankcardId));
         bankPhoneBankRef.setPhoneAccountId(newBankcardId);
         //修改新的
         bankPhoneBankRef.setDefaultAccount(BizConstant.IS_DEFAULT_ACCOUNT);
@@ -92,7 +91,7 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
     public void setAlias(AliasDTO aliasDTO) {
         BankPhoneBankRef bankPhoneBankRef = new BankPhoneBankRef();
         BeanUtils.copyProperties(aliasDTO,bankPhoneBankRef);
-        baseMapper.update(bankPhoneBankRef,Wrappers.lambdaUpdate(bankPhoneBankRef).eq(BankPhoneBankRef::getAccountId,bankPhoneBankRef.getAccountId()));
+        baseMapper.update(bankPhoneBankRef,Wrappers.lambdaUpdate(BankPhoneBankRef.class).eq(BankPhoneBankRef::getAccountId,aliasDTO.getAccountId()));
     }
 
     /**
@@ -103,6 +102,7 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
      */
     @Override
     public void comparePayPwd(Long bankcardId, String payPwd) {
+        payPwd=CypherUtil.encrypt(payPwd);
         BankPhoneBankRef bankPhoneBankRef = baseMapper.selectOne(
                 Wrappers.lambdaQuery(BankPhoneBankRef.class)
                         .eq(BankPhoneBankRef::getAccountId, bankcardId)
@@ -110,7 +110,7 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
         if (bankPhoneBankRef == null) {
             throw new BizException(BizExceptionConstant.INVALID_ACCOUNT_PARAMETER);
         }
-        if (!StrUtil.equals(CypherUtil.encryptSM4(payPwd), bankPhoneBankRef.getPayPWD())) {
+        if (!StrUtil.equals(payPwd, bankPhoneBankRef.getPayPWD())) {
             throw new BizException(BizExceptionConstant.PAY_PWD_ERROR);
         }
     }
@@ -133,17 +133,5 @@ public class BankPhoneBankRefServiceImpl extends ServiceImpl<BankPhoneBankRefMap
         return bankPhoneBankRefs.stream().map(BankPhoneBankRef::getAccountId).toList();
     }
 
-//    public ResponseResult getBankcardIdByPhoneAccountId(Long phoneAccountId) {
-//        List<BankPhoneBankRef> bankPhoneBankRefs = baseMapper.selectList(
-//                Wrappers.lambdaQuery(BankPhoneBankRef.class)
-//                        .eq(BankPhoneBankRef::getPhoneAccountId, phoneAccountId)
-//                        .select(BankPhoneBankRef::getAccountId)
-//        );
-//        if (CollUtil.isEmpty(bankPhoneBankRefs)) {
-//            return ResponseResult.error();
-//        }
-//        Stream<Long> ids = bankPhoneBankRefs.stream().map(BankPhoneBankRef::getAccountId);
-//        return ResponseResult.success(ids);
-//    }
 
 }

@@ -12,5 +12,9 @@ import com.baomidou.mybatisplus.extension.service.IService;
  * @since 2023-12-06
  */
 public interface PhonePayerService extends IService<PhonePayer> {
-
+    /**
+     * 修改
+     * @param phonePayer
+     */
+    void update(PhonePayer phonePayer);
 }

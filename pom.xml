@@ -108,6 +108,14 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <version>2.7.17</version>
+<!--                <configuration>-->
+<!--                    <requiresUnpack>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.bouncycastle</groupId>-->
+<!--                            <artifactId>bcprov-jdk15to18</artifactId>-->
+<!--                        </dependency>-->
+<!--                    </requiresUnpack>-->
+<!--                </configuration>-->
             </plugin>
         </plugins>
     </build>

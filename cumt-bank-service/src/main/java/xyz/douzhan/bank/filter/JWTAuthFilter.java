@@ -1,5 +1,6 @@
 package xyz.douzhan.bank.filter;
 
+import cn.hutool.core.convert.NumberWithFormat;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
@@ -29,6 +30,8 @@ public class JWTAuthFilter implements Filter {
 
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
+//        UserContext.setContext(1L);
+//        filterChain.doFilter(servletRequest, servletResponse);
         HttpServletRequest request= (HttpServletRequest) servletRequest;
         //是否匹配放行白名单
         Boolean isMatch = HttpUtil.match(AuthConstant.WHITE_LIST, request);
@@ -49,12 +52,19 @@ public class JWTAuthFilter implements Filter {
         //4.从缓存尝试获取token
         LoginInfoRedis userRedis = (LoginInfoRedis) RedisUtil.get("user:jwt:" + token);
 
+        Long phoneAccountId=null;
+        try {
+            if (userRedis==null){
+                NumberWithFormat numberWithFormat = (NumberWithFormat) JWTUtil.parseToken(token);
+                phoneAccountId=numberWithFormat.longValue();
 
-        if (userRedis==null){
-           throw new AuthenticationException("未进行登录，请登录");
+            }else {
+                phoneAccountId=userRedis.phoneAccountId();
+            }
+        }catch (Exception e){
+            throw new AuthenticationException("未登录或token校验失败:"+e.getMessage());
         }
 
-        Long phoneAccountId  = (Long) userRedis.phoneAccountId();
         UserContext.setContext(phoneAccountId);
 
         filterChain.doFilter(servletRequest,servletResponse);

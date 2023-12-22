@@ -45,17 +45,17 @@ public class PhoneAccount implements Serializable {
     @TableField(value = "account_pwd")//, typeHandler = EncodeTypeHandler.class
     private String accountPWD;
 
-    @Schema(description = "头像url")
-    @TableField("avatar")
-    private String avatar;
-
-    @Schema(description = "证件正面uri")
-    @TableField("doc_front_uri")
-    private String docFrontUri;
-
-    @Schema(description = "证件反面uri")
-    @TableField("doc_back_uri")
-    private String docBackUri;
+//    @Schema(description = "头像url")
+//    @TableField("avatar")
+//    private String avatar;
+//
+//    @Schema(description = "证件正面uri")
+//    @TableField("doc_front_uri")
+//    private String docFrontUri;
+//
+//    @Schema(description = "证件反面uri")
+//    @TableField("doc_back_uri")
+//    private String docBackUri;
 
     @Schema(description = "更新时间")
     @TableField(value = "update_time", fill = FieldFill.INSERT_UPDATE)

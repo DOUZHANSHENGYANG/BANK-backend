@@ -81,6 +81,12 @@
                     <mainClass>
                         xyz.douzhan.bank.BankApplication
                     </mainClass>
+<!--                    <requiresUnpack>-->
+<!--                        <dependency>-->
+<!--                            <groupId>org.bouncycastle</groupId>-->
+<!--                            <artifactId>bcprov-jdk15to18</artifactId>-->
+<!--                        </dependency>-->
+<!--                    </requiresUnpack>-->
                 </configuration>
                 <executions>
                     <execution>

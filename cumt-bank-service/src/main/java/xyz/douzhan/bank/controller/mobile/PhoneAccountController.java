@@ -33,6 +33,10 @@ public class PhoneAccountController {
 
     private final PhoneAccountService phoneAccountService;
 
+    @GetMapping("/login/test")
+    public String test() {
+        return "Congrats you!";
+    }
     @DeleteMapping("/destroy")
     @Operation(summary = "注销账户")
     public ResponseResult deleteAccount() {
@@ -61,12 +65,12 @@ public class PhoneAccountController {
     }
 
 
-    @PostMapping("/avatar")
-    @Operation(summary = "用户上传头像")
-    public ResponseResult register(@RequestParam("file") @Parameter(description = "用户头像文件") MultipartFile file) {
-        String url = phoneAccountService.upload(file);
-        return ResponseResult.success(url);
-    }
+//    @PostMapping("/avatar")
+//    @Operation(summary = "用户上传头像")
+//    public ResponseResult register(@RequestParam("file") @Parameter(description = "用户头像文件") MultipartFile file) {
+//        String url = phoneAccountService.upload(file);
+//        return ResponseResult.success(url);
+//    }
 
     @PostMapping("/register")
     @Operation(summary = "注册")
@@ -97,4 +101,5 @@ public class PhoneAccountController {
         RedisUtil.del(RedisConstant.USR_JWT_PREFIX+token);
         return ResponseResult.success();
     }
+
 }

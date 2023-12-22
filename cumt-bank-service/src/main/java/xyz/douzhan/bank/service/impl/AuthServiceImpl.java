@@ -10,8 +10,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 import xyz.douzhan.bank.constants.*;
-import xyz.douzhan.bank.context.UserContext;
-import xyz.douzhan.bank.dto.OCRDTO;
 import xyz.douzhan.bank.dto.ValidateVerifyCodeDTO;
 import xyz.douzhan.bank.enums.VerifyCodeType;
 import xyz.douzhan.bank.exception.AuthenticationException;
@@ -98,85 +96,84 @@ public class AuthServiceImpl implements AuthService {
         }
     }
 
-    /**
-     * 图像识别
-     *
-     * @param ocrdto
-     * @param file
-     * @return
-     */
-    @Override
-    public Map<String, Object> ocr(OCRDTO ocrdto, MultipartFile file) {
-        Map<String, Object> ocrResult = null;
-        String side=null;
-        try {
-            // 将图片文件编码成base64字符串
-            String base64Img = Base64.encode(file.getInputStream());
-            // 正反面
-            if (BizConstant.PIC_FRONT.compareTo(ocrdto.getType())==0){
-                side=BizConstant.DOCUMENTS_FRONT;
-            }else {
-                side=BizConstant.DOCUMENTS_BACK;
-            }
-            ocrResult = BaiduAIUtil.ocr(ocrdto.getType(), base64Img, side);
-        } catch (Exception e) {
-            throw new ThirdPartyAPIException(ThirdAPIExceptionConstant.BAIDU_OCR_ERROR);
-        }
-        return ocrResult;
-
-    }
-
-    /**
-     * 上传证件
-     *
-     * @param frontFile
-     * @param backFile
-     * @param firstAccountId
-     * @return
-     */
-    @Override
-    public JSONObject uploadDocuments(MultipartFile frontFile, MultipartFile backFile, Long firstAccountId) {
-        String frontDocumentsURI = MinIOUtil.uploadDocuments(frontFile, firstAccountId, BizConstant.DOCUMENTS_FRONT);
-        String backDocumentsURI = MinIOUtil.uploadDocuments(backFile, firstAccountId, BizConstant.DOCUMENTS_BACK);
-        JSONObject jsonObject = new JSONObject();
-        jsonObject.put(BizConstant.DOCUMENTS_FRONT, frontDocumentsURI);
-        jsonObject.put(BizConstant.DOCUMENTS_BACK, backDocumentsURI);
-        return jsonObject;
-    }
-
-    /**
-     * 注册前的人脸认证
-     *
-     * @param frontFile
-     * @param liveFile
-     * @return
-     */
-    @Override
-    public boolean faceAuthTemp(MultipartFile frontFile, MultipartFile liveFile) {
-        return faceAuthCommon(frontFile, null, liveFile);
-    }
+//    /**
+//     * 图像识别
+//     *
+//     * @param side
+//     * @param file
+//     * @return
+//     */
+//    @Override
+//    public String ocr(Integer side, MultipartFile file) {
+//        try {
+//            String fileSide=null;
+//            // 将图片文件编码成base64字符串
+//            String base64Img = Base64.encode(file.getInputStream());
+//            // 正反面
+//            if (BizConstant.PIC_FRONT.compareTo(side)==0){
+//                fileSide=BizConstant.DOCUMENTS_FRONT;
+//            }else {
+//                fileSide=BizConstant.DOCUMENTS_BACK;
+//            }
+//             return BaiduAIUtil.ocr(base64Img, fileSide);
+//        } catch (Exception e) {
+//            throw new ThirdPartyAPIException(ThirdAPIExceptionConstant.BAIDU_OCR_ERROR+e.getMessage());
+//        }
+//
+//    }
+//
+//    /**
+//     * 上传证件
+//     *
+//     * @param frontFile
+//     * @param backFile
+//     * @param firstAccountId
+//     * @return
+//     */
+//    @Override
+//    public JSONObject uploadDocuments(MultipartFile frontFile, MultipartFile backFile, Long firstAccountId) {
+//        String frontDocumentsURI = MinIOUtil.uploadDocuments(frontFile, firstAccountId, BizConstant.DOCUMENTS_FRONT);
+//        String backDocumentsURI = MinIOUtil.uploadDocuments(backFile, firstAccountId, BizConstant.DOCUMENTS_BACK);
+//        JSONObject jsonObject = new JSONObject();
+//        jsonObject.put(BizConstant.DOCUMENTS_FRONT, frontDocumentsURI);
+//        jsonObject.put(BizConstant.DOCUMENTS_BACK, backDocumentsURI);
+//        return jsonObject;
+//    }
+//
+//    /**
+//     * 注册前的人脸认证
+//     *
+//     * @param frontFile
+//     * @param liveFile
+//     * @return
+//     */
+//    @Override
+//    public boolean faceAuthTemp(MultipartFile frontFile, MultipartFile liveFile) {
+//        return faceAuthCommon(frontFile, null, liveFile);
+//    }
 
 
-    /**
-     * 注册后的人脸认证
-     *
-     * @param liveFile
-     * @return
-     */
-    @Override
-    public Boolean faceAuth(MultipartFile liveFile) {
-        //加载证件正面照片
-        Long phoneAccountId = UserContext.getContext();
-        PhoneAccount phoneAccount = phoneAccountService.getOne(Wrappers.lambdaQuery(PhoneAccount.class)
-                .eq(PhoneAccount::getId, phoneAccountId)
-                .select(PhoneAccount::getDocFrontUri));
-        byte[] frontFile = MinIOUtil.download(phoneAccount.getDocFrontUri());
-        //验证
-        faceAuthCommon(null, frontFile, liveFile);
-        return null;
-    }
+//    /**
+//     * 注册后的人脸认证
+//     *
+//     * @param liveFile
+//     * @param phoneAccountId
+//     * @return
+//     */
+//    @Override
+//    public Boolean faceAuth(MultipartFile liveFile, long phoneAccountId) {
+//        //加载证件正面照片
+//        PhoneAccount phoneAccount = phoneAccountService.getOne(Wrappers.lambdaQuery(PhoneAccount.class)
+//                .eq(PhoneAccount::getId, phoneAccountId)
+//                .select(PhoneAccount::getDocFrontUri));
+//        byte[] frontFile = MinIOUtil.download(phoneAccount.getDocFrontUri());
+//        //验证
+//        faceAuthCommon(null, frontFile, liveFile);
+//        return null;
+//    }
 
     private boolean faceAuthCommon(MultipartFile frontFile1, byte[] frontFile2, MultipartFile liveFile) {
+
         boolean isSuccess = false;
         try {
             String base64IDCard = null;

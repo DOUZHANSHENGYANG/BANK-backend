@@ -3,7 +3,6 @@ package xyz.douzhan.bank.service.impl;
 import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
-import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.beans.BeanUtils;
@@ -14,12 +13,10 @@ import xyz.douzhan.bank.dto.TransactionDetailsVO;
 import xyz.douzhan.bank.dto.result.PageResponseResult;
 import xyz.douzhan.bank.mapper.TransactionHistoryMapper;
 import xyz.douzhan.bank.po.TransactionHistory;
-import xyz.douzhan.bank.service.BankCardService;
 import xyz.douzhan.bank.service.TransactionHistoryService;
+import xyz.douzhan.bank.utils.CypherUtil;
 
 import java.time.LocalDate;
-import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -43,8 +40,9 @@ public class TransactionHistoryServiceImpl extends ServiceImpl<TransactionHistor
      */
     @Override
     public PageResponseResult getTransactionDetails(TransactionDetailsDTO detailsDTO) {
-        Page<TransactionHistory> page = new Page<>(detailsDTO.getStartPage(), detailsDTO.getPageNum());
+        detailsDTO.setCardNum(CypherUtil.encrypt(detailsDTO.getCardNum()));
 
+        Page<TransactionHistory> page = new Page<>(detailsDTO.getStartPage(), detailsDTO.getPageNum());
 
         LocalDate startDate = detailsDTO.getStartTime();
         LocalDate endDate = detailsDTO.getEndTime();
@@ -62,6 +60,10 @@ public class TransactionHistoryServiceImpl extends ServiceImpl<TransactionHistor
             transactionDetailsVOS= records.stream().map(record -> {
                 TransactionDetailsVO transactionDetailsVO = new TransactionDetailsVO();
                 BeanUtils.copyProperties(record, transactionDetailsVO);
+                transactionDetailsVO.setTransferorName(CypherUtil.decrypt(record.getTransferorName()));
+                transactionDetailsVO.setTransfereeName(CypherUtil.decrypt(record.getTransfereeName()));
+                transactionDetailsVO.setTransferorNum(CypherUtil.decrypt(record.getTransferorNum()));
+                transactionDetailsVO.setTransfereeNum(CypherUtil.decrypt(record.getTransfereeNum()));
                 if (StrUtil.equals(detailsDTO.getCardNum(), record.getTransferorNum())) {
                     transactionDetailsVO.setIe(TransferConstant.PAYMENT);
                 } else {

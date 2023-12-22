@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.*;
 import xyz.douzhan.bank.po.UserInfo;
 import xyz.douzhan.bank.dto.result.ResponseResult;
 import xyz.douzhan.bank.service.UserInfoService;
+import xyz.douzhan.bank.utils.CypherUtil;
 
 /**
  * <p>
@@ -32,6 +33,10 @@ public class UserInfoController {
         if (userInfo==null){
             return ResponseResult.error();
         }
+        userInfo.setPhoneNumber(CypherUtil.decrypt(userInfo.getPhoneNumber()));
+        userInfo.setDocumentsNum(CypherUtil.decrypt(userInfo.getDocumentsNum()));
+        userInfo.setName(CypherUtil.decrypt(userInfo.getName()));
+        userInfo.setPinYin(CypherUtil.decrypt(userInfo.getPinYin()));
         return ResponseResult.success(userInfo);
     }
 

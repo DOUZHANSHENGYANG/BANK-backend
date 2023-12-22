@@ -37,7 +37,7 @@ public class PhonePayer implements Serializable {
 
     @Schema(description ="转账卡号")
     @TableField(value = "bank_num")
-    private String bankNum;
+    private String bankcardNum;
 
     @Schema(description ="转账人名字")
     @TableField(value = "name")

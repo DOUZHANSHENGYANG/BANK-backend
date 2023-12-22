@@ -12,6 +12,7 @@ import xyz.douzhan.bank.service.PhoneAccountService;
 import xyz.douzhan.bank.service.UserInfoService;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import org.springframework.stereotype.Service;
+import xyz.douzhan.bank.utils.CypherUtil;
 
 /**
  * <p>
@@ -32,6 +33,7 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
                 .eq(PhoneAccount::getId, UserContext.getContext())
                 .select(PhoneAccount::getUserInfoId)
                 .one();
+
         //查询用户信息
         return baseMapper.selectById(phoneAccount.getUserInfoId());
     }
@@ -42,7 +44,6 @@ public class UserInfoServiceImpl extends ServiceImpl<UserInfoMapper, UserInfo> i
      * @param userInfo
      */
     @Override
-    @Transactional
     public void updateUserInfo(UserInfo userInfo) {
         PhoneAccount phoneAccount = Db.getOne(Wrappers.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, UserContext.getContext()).select(PhoneAccount::getUserInfoId));
         userInfo.setId(phoneAccount.getUserInfoId());

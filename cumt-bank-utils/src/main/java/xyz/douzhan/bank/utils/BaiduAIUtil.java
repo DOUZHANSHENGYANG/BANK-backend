@@ -1,19 +1,18 @@
 package xyz.douzhan.bank.utils;
 
 import cn.hutool.core.util.StrUtil;
-import com.baidu.aip.ocr.AipOcr;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.gson.Gson;
+import com.google.gson.JsonObject;
 import lombok.extern.slf4j.Slf4j;
 import okhttp3.MediaType;
 import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 import org.json.JSONObject;
-import org.springframework.stereotype.Component;
 import xyz.douzhan.bank.constants.BizConstant;
-import xyz.douzhan.bank.constants.ThirdAPIConfigConstant;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 
 import java.io.IOException;
@@ -34,10 +33,10 @@ import java.util.Map;
 public class BaiduAIUtil {
 
 
-    private static final String APP_ID="44513880";
-    private static final String API_KEY="YXtFzXr6ssK8eZoPPDKDTi2w";
-    private static final String SECRET_KEY="y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox";
-
+    private static final String APP_ID = "45520727";
+    private static final String API_KEY = "OfCtjLuzy6NlEYfmMPIqG7Vb";
+    private static final String SECRET_KEY = "pmGmsHWYl1Pqn93vWHIWFKdpk2Ivy359";
+    private static final String ACCESS_TOKEN = "24.a07d43621337d98b6719c5b3cb27bd63.2592000.1705833393.282335-45520727";
 
 
     /**
@@ -49,18 +48,19 @@ public class BaiduAIUtil {
      */
     public static Boolean faceAuth(String base64Live, String base64IDCard) {
         try {
+//            String json = String.format("[{\"image\":\"%s\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\"},{\"image\":\"%s\",\"image_type\":\"BASE64\",\"face_type\":\"IDCARD\"}]", base64Live, base64IDCard);
             // 1.创建请求
             MediaType mediaType = MediaType.parse("application/json");
-            RequestBody body = RequestBody.create(
-                    mediaType,
-                    "[{\"image\":\"" + base64Live + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"},{\"image\":\"" + base64IDCard + "\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"quality_control\":\"NORMAL\",\"liveness_control\":\"NONE\",\"spoofing_control\":\"NORMAL\"}]");
+            RequestBody body = RequestBody.create(mediaType, "[{\"image\":\"/9j/4QCORXhpZgAATU0AKgAAAAgABQEAAAMAAAABAswAAAEBAAMAAAABBhAAAIdpAAQAAAABAAAASgESAAMAAAABAAAAAAEyAAIA...\",\"image_type\":\"BASE64\",\"face_type\":\"LIVE\",\"liveness_control\":\"NORMAL\",\"spoofing_control\":\"NORMAL\"},{\"image\":\"/9j/4QCqRXhpZgAATU0AKgAAAAgABQEAAAQAAAABAAAC0AEBAAQAAAABAAADwIdpAAQAAAABAAAAXgESAAMAAAABAAEAAAEyAAIA...\",\"image_type\":\"BASE64\",\"face_type\":\"IDCARD\",\"spoofing_control\":\"NORMAL\"}]");
             Request request = new Request.Builder()
-                    .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=" +"24.3c496ed55be1f235afae208ddc8b9e0b.2592000.1705678890.282335-44566860")
+                    .url("https://aip.baidubce.com/rest/2.0/face/v3/match?access_token=24.a07d43621337d98b6719c5b3cb27bd63.2592000.1705833393.282335-45520727")
                     .method("POST", body)
                     .addHeader("Content-Type", "application/json")
                     .build();
             // 2.发送请求
             Response response = HttpClientUtil.getHTTP_CLIENT().newCall(request).execute();
+            System.out.println(response.body().string());
+
             // 3.处理结果
             JSONObject result = new JSONObject(response.body().string());
             if (!StrUtil.equals(result.getString("error_msg"), "success", true)) {
@@ -83,96 +83,31 @@ public class BaiduAIUtil {
      * @param idCardSide
      * @return
      */
-    public static Map<String, Object> ocr(Integer type, String base64Img, String idCardSide) throws JsonProcessingException {
-        AipOcr client = createOcrClient();
-        // 传入可选参数调用接口
-        HashMap<String, String> options = new HashMap<String, String>();
-        options.put("detect_direction", "true");
-        options.put("detect_risk", "false");
-
-        JSONObject res = null;
-        Map<String, Object> resultMap = null;
-        if (type == BizConstant.ID_CARD) {//身份证识别
-            res = client.idcard(base64Img, idCardSide, options);
-            resultMap = parseJsonString(res.toString(), "words_result", "words");
-        } else if (type == BizConstant.BANKCARD) {//银行卡识别
-            res = client.bankcard(base64Img, options);
-            JSONObject result = res.getJSONObject("result");
-            resultMap = result.toMap();
-        }
-        return resultMap;
-    }
-
-    /**
-     * 解析jsonObject
-     *
-     * @param jsonString
-     * @param position
-     * @param name
-     * @return
-     * @throws JsonProcessingException
-     */
-    private static Map<String, Object> parseJsonString(String jsonString, String position, String name) throws JsonProcessingException {
-        ObjectMapper mapper = new ObjectMapper();
-        Map<String, Object> resultMap = new HashMap<>();
-        JsonNode jsonNode = mapper.readTree(jsonString);
-        JsonNode node = jsonNode.get(position);
-        Iterator<Map.Entry<String, JsonNode>> fields = node.fields();
-        while (fields.hasNext()) {
-            Map.Entry<String, JsonNode> field = fields.next();
-            String key = field.getKey();
-            String words = field.getValue().get(name).asText();
-            resultMap.put(key, words);
-        }
-        return resultMap;
-    }
-
-
-    /**
-     * 从用户的AK，SK生成鉴权签名（Access Token）
-     *
-     * @return 鉴权签名（Access Token）
-     * @throws IOException IO异常
-     */
-    static String getAccessToken() throws IOException {
-        MediaType mediaType = MediaType.parse("application/json");
-        RequestBody body = RequestBody.create(mediaType, "");
+    public static String ocr(String base64Img, String idCardSide) throws IOException {
+        MediaType mediaType = MediaType.parse("application/x-www-form-urlencoded");
+        // image 可以通过 getFileContentAsBase64("C:\fakepath\frontFile.jpg") 方法获取,如果Content-Type是application/x-www-form-urlencoded时,第二个参数传true
+        RequestBody body = RequestBody.create(mediaType, "id_card_side=front&image=" + base64Img + "&detect_risk=true&detect_quality=true&detect_photo=false&detect_card=false&detect_direction=true");
         Request request = new Request.Builder()
-                .url("https://aip.baidubce.com/oauth/2.0/token?client_id=YXtFzXr6ssK8eZoPPDKDTi2w&client_secret=y9GaO27dkLTPHnKcvxrcXbxSpU6892Ox&grant_type=client_credentials")
+                .url("https://aip.baidubce.com/rest/2.0/ocr/v1/idcard?access_token=24.a07d43621337d98b6719c5b3cb27bd63.2592000.1705833393.282335-45520727")
                 .method("POST", body)
-                .addHeader("Content-Type", "application/json")
+                .addHeader("Content-Type", "application/x-www-form-urlencoded")
                 .addHeader("Accept", "application/json")
                 .build();
         Response response = HttpClientUtil.getHTTP_CLIENT().newCall(request).execute();
-        return new JSONObject(response.body().string()).getString("access_token");
+        return parse(response.body().string());
+    }
+
+    private static String parse(String string) {
+        Gson gson = new Gson();
+        HashMap<String, Object> result = new HashMap<>();
+        JsonObject jsonObject = gson.fromJson(string, JsonObject.class);
+        JsonObject wordsResult = jsonObject.getAsJsonObject("words_result");
+        if (wordsResult == null) {
+            throw new ThirdPartyAPIException("证件识别错误");
+        }
+        return wordsResult.toString();
     }
 
 
-    /**
-     * 创建客户
-     *
-     * @return
-     */
-    private static AipOcr createOcrClient() {
-        // 初始化一个AipOcr
-        AipOcr client = new AipOcr(APP_ID,API_KEY,SECRET_KEY);
-
-        // 可选：设置网络连接参数
-        client.setConnectionTimeoutInMillis(2000);
-        client.setSocketTimeoutInMillis(60000);
-//
-//        // 可选：设置代理服务器地址, http和socket二选一，或者均不设置
-//        client.setHttpProxy("proxy_host", proxy_port);  // 设置http代理
-//        client.setSocketProxy("proxy_host", proxy_port);  // 设置socket代理
-
-        // 可选：设置log4j日志输出格式，若不设置，则使用默认配置
-        // 也可以直接通过jvm启动参数设置此环境变量
-//        System.setProperty("aip.log4j.conf", "path/to/your/log4j.properties");
-
-        return client;
-//        // 调用接口
-//        String path = "test.jpg";
-//        JSONObject res = client.basicGeneral(path, new HashMap<String, String>());
-//        System.out.println(res.toString(2));
-    }
 }
+

@@ -30,7 +30,7 @@ public class TransferController {
     private final TransferService transferService;
 
     @GetMapping("/status")
-    @Operation(summary = "查询订单状态(通用 主要用于二维码（付款码方式）)")
+    @Operation(summary = "查询订单状态)")
     public ResponseResult queryOrderStatus(@RequestParam("orderId") @Parameter(description = "转账订单id") Long orderId){
         Integer status = transferService.queryOrderStatus(orderId);
         return ResponseResult.success(status);
@@ -49,10 +49,9 @@ public class TransferController {
     @Operation(summary = "完成转账订单")
     public ResponseResult completeOrder(
             @RequestParam("orderId") @Parameter(description = "转账订单id") Long orderId,
-            @RequestParam("status") @Parameter(description = "状态 1成功结束 2异常结束") Integer status,
-            @RequestParam("money") @Parameter(description = "转账金额") Integer money
+            @RequestParam("status") @Parameter(description = "状态 1成功结束 2异常结束") Integer status
     ) {
-        transferService.completeOrder(orderId,status, money);
+        transferService.completeOrder(orderId,status);
         return ResponseResult.success();
     }
 
