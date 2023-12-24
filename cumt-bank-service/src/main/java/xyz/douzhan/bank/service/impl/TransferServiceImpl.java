@@ -15,12 +15,10 @@ import xyz.douzhan.bank.constants.TransferConstant;
 import xyz.douzhan.bank.enums.AccountType;
 import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.mapper.TransferMapper;
-import xyz.douzhan.bank.po.Bankcard;
-import xyz.douzhan.bank.po.TransactionHistory;
-import xyz.douzhan.bank.po.Transfer;
-import xyz.douzhan.bank.po.UserInfo;
+import xyz.douzhan.bank.po.*;
 import xyz.douzhan.bank.properties.BizProperties;
 import xyz.douzhan.bank.service.BankCardService;
+import xyz.douzhan.bank.service.LimitService;
 import xyz.douzhan.bank.service.TransactionHistoryService;
 import xyz.douzhan.bank.service.TransferService;
 import xyz.douzhan.bank.utils.CypherUtil;
@@ -28,6 +26,7 @@ import xyz.douzhan.bank.utils.DomainBizUtil;
 import xyz.douzhan.bank.utils.RedisUtil;
 import xyz.douzhan.bank.vo.SupportBankVO;
 
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
@@ -47,6 +46,7 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
     private final BizProperties bizProperties;
     private final TransactionHistoryService transactionHistoryService;
     private final BankCardService bankCardService;
+    private final LimitService limitService;
 
     @Override
     public Long createOrder(Transfer transfer) {
@@ -55,32 +55,35 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         Integer type = transfer.getType();
 
         if (TransferConstant.INTRA_BANK.compareTo(type) == 0) {//行内转账
+//            transfer.setTransferorCardNum(CypherUtil.encrypt(transfer.getTransferorCardNum()));
+//            transfer.setTransfereeCardNum(CypherUtil.encrypt(transfer.getTransfereeCardNum()));
+//            transfer.setTransferorName(CypherUtil.encrypt(transfer.getTransferorName()));
+//            transfer.setTransfereeName(CypherUtil.encrypt(transfer.getTransfereeName()));
 
-            transfer.setTransferorCardNum(CypherUtil.encrypt(transfer.getTransferorCardNum()));
-            transfer.setTransfereeCardNum(CypherUtil.encrypt(transfer.getTransfereeCardNum()));
-            transfer.setTransferorName(CypherUtil.encrypt(transfer.getTransferorName()));
-            transfer.setTransfereeName(CypherUtil.encrypt(transfer.getTransfereeName()));
-
+            //  查询转账人账户余额是否够转账
             Bankcard transferorAccount = bankCardService.getOne(
                     new LambdaQueryWrapper<Bankcard>()
                             .eq(Bankcard::getNumber, transfer.getTransferorCardNum())
-                            .select(Bankcard::getId, Bankcard::getBalance,Bankcard::getType));
+                            .select(Bankcard::getId, Bankcard::getBalance, Bankcard::getType,Bankcard::getBankcardId));
             Long transferorAccountBalance = transferorAccount.getBalance();
+            // 余额不够报错
             if (transferorAccountBalance < money) {
                 throw new BizException(BizExceptionConstant.ACCOUNT_BALANCE_NOT_ENOUGH);
             }
-
+            // 查询是否存在收款人账户
             Bankcard transfereeAccount = bankCardService.getOne(
                     new LambdaQueryWrapper<Bankcard>()
                             .eq(Bankcard::getNumber, transfer.getTransfereeCardNum())
-                            .select(Bankcard::getId, Bankcard::getBalance,Bankcard::getType));
+                            .select(Bankcard::getId, Bankcard::getBalance, Bankcard::getType,Bankcard::getBankcardId));
             Long transfereeAccountBalance = transfereeAccount.getBalance();
-            if (transfereeAccount==null){
-                    throw new BizException(BizExceptionConstant.INVALID_TRANSFEREE_INFO);
+            // 不存在报错
+            if (transfereeAccount == null) {
+                throw new BizException(BizExceptionConstant.INVALID_TRANSFEREE_INFO);
             }
-            if (transfereeAccount.getType()== AccountType.THIRD.getValue()&&(money+transfereeAccountBalance)>200000){
-                throw new BizException("三类账户余额不能超过2000");
-            }
+            // 校验限额
+            verifyLimit(transferorAccount, transfereeAccount, money);
+
+            // 预转账(防止业务异常）
             transferorAccountBalance = transferorAccountBalance - money;
             transfereeAccountBalance = transfereeAccountBalance + money;
 
@@ -101,6 +104,135 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         throw new BizException(BizExceptionConstant.BUSINESS_PARAMETERS_ARE_INVALID);
     }
 
+    /**
+     * 限额校验
+     *
+     * @param transferorAccount
+     * @param transfereeAccount
+     */
+    private void verifyLimit(Bankcard transferorAccount, Bankcard transfereeAccount, Integer money) {
+        // 先检查手机银行总限额 再检查不同类型账户限额，
+        if (BizConstant.BANK_LIMIT.compareTo(money) < 0) {
+            throw new BizException("转账金额超过手机银行规定限额50万");
+        }
+
+
+        Integer transferorAccountType = transferorAccount.getType();
+        Integer transfereeAccountType = transfereeAccount.getType();
+
+        Long transferorAccountBankcardId = transferorAccount.getBankcardId();
+        Long transfereeAccountBankcardId = transfereeAccount.getBankcardId();
+
+        // 三类账户余额不能超过2000
+        if (transfereeAccountType == AccountType.THIRD.getValue() && (money + transfereeAccount.getBalance()) > BizConstant.THIRD_BALANCE) {
+            throw new BizException("接收资金的三类账户余额不能超过2000元");
+        }
+
+        // 绑定账户判断 ：一类账户和二三类账户绑定账户为true 其他为false
+        boolean isTransferorBindAccount = (transferorAccountType.compareTo(AccountType.FIRST.getValue()) == 0) || (transferorAccountBankcardId != null);
+        boolean isTransfereeBindAccount = (transfereeAccountType.compareTo(AccountType.FIRST.getValue()) == 0) || (transfereeAccountBankcardId != null);
+        // 现在时间
+        LocalDateTime now = LocalDateTime.now();
+        // 非绑定账户向二类账户转账
+        if (!isTransferorBindAccount && transfereeAccountType.compareTo(AccountType.SECOND.getValue()) == 0) {
+            Limit transfereeLimit = limitService.getOne(Wrappers.lambdaQuery(Limit.class).eq(Limit::getBankcardId, transfereeAccount.getId()));
+            // 判断日累计限额
+            // 今天
+            if (transfereeLimit.getUpdateTime().getDayOfYear() == now.getDayOfYear()) {
+                if (transfereeLimit.getDayIn() + money > BizConstant.II_DAY_LIMIT) {
+                    throw new BizException("II类户接收非绑定账户转入资金日累计金额不得超过1万元");
+                } else {
+                    transfereeLimit.setDayIn(transfereeLimit.getDayIn() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.II_DAY_LIMIT) {
+                    throw new BizException("II类户接收非绑定账户转入资金日累计金额不得超过1万元");
+                }
+                transfereeLimit.setDayIn(money);
+            }
+            // 判断年累计限额
+            // 本年
+            if (transfereeLimit.getUpdateTime().getYear() == now.getYear()) {
+                if (transfereeLimit.getYearIn() + money > BizConstant.II_YEAR_LIMIT) {
+                    throw new BizException("II类户接收非绑定账户转入资金年累计金额不得超过20万元");
+                } else {
+                    transfereeLimit.setYearIn(transfereeLimit.getYearIn() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.II_YEAR_LIMIT) {
+                    throw new BizException("II类户接收非绑定账户转入资金日累计金额不得超过20万元");
+                }
+                transfereeLimit.setYearIn(money);
+            }
+            limitService.updateById(transfereeLimit);
+        }
+        // 二类账户向非绑定账户转账
+        if (transferorAccountType.compareTo(AccountType.SECOND.getValue()) == 0 && !isTransfereeBindAccount) {
+            Limit transferorLimit = limitService.getOne(Wrappers.lambdaQuery(Limit.class).eq(Limit::getBankcardId, transferorAccount.getId()));
+            // 判断日累计限额
+            // 今天
+            if (transferorLimit.getUpdateTime().getDayOfYear() == now.getDayOfYear()) {
+                if (transferorLimit.getDayOut() + money > BizConstant.II_DAY_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金日累计金额不得超过1万元");
+                } else {
+                    transferorLimit.setDayOut(transferorLimit.getDayOut() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.II_DAY_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金日累计金额不得超过1万元");
+                }
+                transferorLimit.setDayOut(money);
+            }
+            // 判断年累计限额
+            // 本年
+            if (transferorLimit.getUpdateTime().getYear() == now.getYear()) {
+                if (transferorLimit.getYearOut() + money > BizConstant.II_YEAR_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金年累计金额不得超过20万元");
+                } else {
+                    transferorLimit.setYearOut(transferorLimit.getYearOut() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.II_YEAR_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金年累计金额不得超过20万元");
+                }
+                transferorLimit.setYearOut(money);
+            }
+            limitService.updateById(transferorLimit);
+        }
+        // 三类账户向非绑定账户转账
+        if (transferorAccountType.compareTo(AccountType.THIRD.getValue()) == 0 && !isTransfereeBindAccount) {
+            Limit transferorLimit = limitService.getOne(Wrappers.lambdaQuery(Limit.class).eq(Limit::getBankcardId, transferorAccount.getId()));
+            // 判断日累计限额
+            // 今天
+            if (transferorLimit.getUpdateTime().getDayOfYear() == now.getDayOfYear()) {
+                if (transferorLimit.getDayOut() + money > BizConstant.III_DAY_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金日累计金额不得超过2000元");
+                } else {
+                    transferorLimit.setDayOut(transferorLimit.getDayOut() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.III_DAY_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金日累计金额不得超过2000元");
+                }
+                transferorLimit.setDayOut(money);
+            }
+            // 判断年累计限额
+            // 本年
+            if (transferorLimit.getUpdateTime().getYear() == now.getYear()) {
+                if (transferorLimit.getYearOut() + money > BizConstant.III_YEAR_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金年累计金额不得超过5万元");
+                } else {
+                    transferorLimit.setYearOut(transferorLimit.getYearOut() + money);
+                }
+            } else { // 以前 就刷新更新今天的
+                if (money > BizConstant.III_YEAR_LIMIT) {
+                    throw new BizException("II类户向非绑定账户转出资金年累计金额不得超过5万元");
+                }
+                transferorLimit.setYearOut(money);
+            }
+            limitService.updateById(transferorLimit);
+        }
+    }
 
 
     /**
@@ -120,11 +252,11 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         Transfer transfer = baseMapper.selectOne(new LambdaQueryWrapper<Transfer>()
                 .eq(Transfer::getId, orderId)
                 .eq(Transfer::getStatus, TransferConstant.ONGOING_STATUS));
-        if (transfer == null||transfer.getStatus()!=TransferConstant.ONGOING_STATUS) {
+        if (transfer == null || transfer.getStatus() != TransferConstant.ONGOING_STATUS) {
             throw new BizException(BizExceptionConstant.ORDER_STATUS_UPDATE_FAILED);
         }
         transfer.setStatus(status);
-        if (status==TransferConstant.FAILED_FINISH){
+        if (status == TransferConstant.FAILED_FINISH) {
             Bankcard transferorAccount = bankCardService.getOne(
                     new LambdaQueryWrapper<Bankcard>()
                             .eq(Bankcard::getNumber, transfer.getTransferorCardNum())
@@ -343,6 +475,7 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
 
     /**
      * 设置转账订单信息
+     *
      * @param transfer
      */
     private static void setTransferInfo(Transfer transfer) {
@@ -397,6 +530,7 @@ public class TransferServiceImpl extends ServiceImpl<TransferMapper, Transfer> i
         }
         return newOrderNum;
     }
+
     private void insertHistory(Transfer transfer) {
         TransactionHistory transactionHistory = TransactionHistory.builder()
                 .orderNum(transfer.getOrderNum())

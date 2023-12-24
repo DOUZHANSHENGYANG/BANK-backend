@@ -23,4 +23,11 @@ public interface TransactionHistoryService extends IService<TransactionHistory> 
      * @return
      */
     PageResponseResult getTransactionDetails(TransactionDetailsDTO detailsDTO);
+
+    /**
+     * 获取本月收支
+     * @param type
+     * @return
+     */
+    Integer getIE(Integer type);
 }

@@ -1,15 +1,18 @@
 package xyz.douzhan.bank.filter;
 
 import cn.hutool.core.convert.NumberWithFormat;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.validation.DataBinder;
 import xyz.douzhan.bank.constants.AuthConstant;
 import xyz.douzhan.bank.context.UserContext;
 import xyz.douzhan.bank.exception.AuthenticationException;
 import xyz.douzhan.bank.dto.LoginInfoRedis;
+import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.utils.HttpUtil;
 import xyz.douzhan.bank.utils.JWTUtil;
 import xyz.douzhan.bank.utils.RedisUtil;
@@ -63,6 +66,11 @@ public class JWTAuthFilter implements Filter {
             }
         }catch (Exception e){
             throw new AuthenticationException("未登录或token校验失败:"+e.getMessage());
+        }
+        // 如果有判断是否存在账户 防止非法访问
+        PhoneAccount phoneAccount = Db.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getId, phoneAccountId).select(PhoneAccount::getUserInfoId).one();
+        if (phoneAccount==null){
+            throw new AuthenticationException("账户不存在，非法访问");
         }
 
         UserContext.setContext(phoneAccountId);

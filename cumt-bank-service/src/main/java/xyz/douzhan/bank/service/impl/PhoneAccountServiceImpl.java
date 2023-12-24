@@ -1,11 +1,14 @@
 package xyz.douzhan.bank.service.impl;
 
+import cn.hutool.core.collection.CollUtil;
 import cn.hutool.core.util.ReUtil;
 import cn.hutool.core.util.StrUtil;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.core.toolkit.Wrappers;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.baomidou.mybatisplus.extension.toolkit.Db;
 import lombok.RequiredArgsConstructor;
+import org.jetbrains.annotations.NotNull;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -21,6 +24,7 @@ import xyz.douzhan.bank.exception.BizException;
 import xyz.douzhan.bank.exception.ThirdPartyAPIException;
 import xyz.douzhan.bank.mapper.PhoneAccountMapper;
 import xyz.douzhan.bank.po.BankPhoneBankRef;
+import xyz.douzhan.bank.po.Bankcard;
 import xyz.douzhan.bank.po.PhoneAccount;
 import xyz.douzhan.bank.po.UserInfo;
 import xyz.douzhan.bank.service.BankPhoneBankRefService;
@@ -31,6 +35,7 @@ import xyz.douzhan.bank.utils.CypherUtil;
 import xyz.douzhan.bank.utils.JWTUtil;
 import xyz.douzhan.bank.utils.RedisUtil;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -226,15 +231,7 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
     @Override
     @Transactional
     public String register(RegisterDTO registerDTO) {
-        //创建手机银行账户信息
-        PhoneAccount phoneAccount = new PhoneAccount();
-        phoneAccount.setAccountPWD(CypherUtil.encrypt(registerDTO.getAccountPWD()));
-        phoneAccount.setPhoneNumber(CypherUtil.encrypt(registerDTO.getPhoneNumber()));
-//        phoneAccount.setDocFrontUri(registerDTO.getDocFrontUri());
-//        phoneAccount.setDocFrontUri(registerDTO.getDocBackUri());
-
-
-        //查询用户信息id
+        //证件号码比较
         UserInfo userInfo = userInfoService.getOne(
                 Wrappers.lambdaQuery(UserInfo.class)
                         .eq(UserInfo::getDocumentsNum, CypherUtil.encrypt(registerDTO.getDocumentsNumber()))
@@ -242,18 +239,58 @@ public class PhoneAccountServiceImpl extends ServiceImpl<PhoneAccountMapper, Pho
         if (userInfo == null) {
             throw new AuthenticationException(AuthExceptionConstant.DOCUMENTS_ERROR);
         }
+        // 查询是否已经注册账户
+        PhoneAccount account = baseMapper.selectOne(Wrappers.lambdaQuery(PhoneAccount.class).eq(PhoneAccount::getUserInfoId, userInfo.getId()).select(PhoneAccount::getId));
+        if (account != null) { // 说明已经存在账户
+           throw new AuthenticationException("已有账户，请前往登录");
+        }
+
+        //创建手机银行账户信息
+        PhoneAccount phoneAccount = new PhoneAccount();
+        phoneAccount.setAccountPWD(CypherUtil.encrypt(registerDTO.getAccountPWD()));
+        phoneAccount.setPhoneNumber(CypherUtil.encrypt(registerDTO.getPhoneNumber()));
         phoneAccount.setUserInfoId(userInfo.getId());
         baseMapper.insert(phoneAccount);
-        //创建I类账户和手机银行账户关联
+        // 创建账户之间和手机银行账户关联
+        // 根据用户信息id查询已有的银行卡账户
+        List<Bankcard> bankcards = Db.lambdaQuery(Bankcard.class).eq(Bankcard::getUserId, userInfo.getId()).select(Bankcard::getId,Bankcard::getType).list();
+        if (CollUtil.isEmpty(bankcards)){
+            throw new BizException("银行账户不存在,业务错误");
+        }
+        // 设置手机银行和银行账户关联
+        for (Bankcard bankcard : bankcards) {
+            BankPhoneBankRef bankPhoneBankRef = getBankPhoneBankRef(registerDTO, bankcard, phoneAccount);
+            bankPhoneBankRefService.save(bankPhoneBankRef);
+        }
+        // 返回token
+        String token = JWTUtil.genToken(phoneAccount.getId());
+        LoginInfoRedis loginInfoRedis = new LoginInfoRedis();
+        loginInfoRedis.phoneAccountId(phoneAccount.getId());
+        //设置缓存
+        RedisUtil.setWithExpire(RedisConstant.USR_JWT_PREFIX + token, loginInfoRedis, JWTUtil.getJwtProperties().getTtl(), TimeUnit.DAYS);
+        return token;
+    }
+
+    /**
+     * 设置手机银行和银行账户关联
+     * @param registerDTO
+     * @param bankcard
+     * @param phoneAccount
+     * @return
+     */
+    @NotNull
+    private static BankPhoneBankRef getBankPhoneBankRef(RegisterDTO registerDTO, Bankcard bankcard, PhoneAccount phoneAccount) {
         BankPhoneBankRef bankPhoneBankRef = new BankPhoneBankRef();
         bankPhoneBankRef.setPayPWD(CypherUtil.encrypt(registerDTO.getPayPWD()));
-        bankPhoneBankRef.setAccountId(registerDTO.getFirstBankcardId());
-        bankPhoneBankRef.setType(AccountType.FIRST.getValue());
-        bankPhoneBankRef.setDefaultAccount(BizConstant.IS_DEFAULT_ACCOUNT);
+        bankPhoneBankRef.setAccountId(bankcard.getId());
+        bankPhoneBankRef.setType(bankcard.getType());
+        if (bankcard.getType().compareTo(AccountType.FIRST.getValue())==0){
+            bankPhoneBankRef.setDefaultAccount(BizConstant.IS_DEFAULT_ACCOUNT);
+        }else {
+            bankPhoneBankRef.setDefaultAccount(BizConstant.IS_NOT_DEFAULT_ACCOUNT);
+        }
         bankPhoneBankRef.setPhoneAccountId(phoneAccount.getId());
-        bankPhoneBankRefService.save(bankPhoneBankRef);
-
-        return authPwdAndPostLogin(false,phoneAccount);
+        return bankPhoneBankRef;
     }
 
     @Override

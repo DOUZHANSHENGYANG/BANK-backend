@@ -43,4 +43,8 @@ public class BankCardVO implements Serializable {
     private Long bankcardId;
     @Schema(description = "开户日期")
     private LocalDateTime createTime;
+    @Schema(description = "0 为默认 1不是")
+    private Integer defaultAccount;
+    @Schema(description = "有则非空 没有就为空")
+    private String alias;
 }

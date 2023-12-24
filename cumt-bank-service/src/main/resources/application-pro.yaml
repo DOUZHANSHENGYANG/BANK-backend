@@ -4,7 +4,7 @@ bank:
     port: 3306
     database: bank
     username: root
-    password: 1234
+    password: 082127
   redis:
     host: redis
     port: 6379

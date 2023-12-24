@@ -31,7 +31,13 @@ public class TransactionHistoryController {
     @Operation(summary = "获取交易明细")
     public PageResponseResult getTransactionDetails(@RequestBody@Parameter(description = "交易明细DTO") TransactionDetailsDTO detailsDTO) {
         return transactionHistoryService.getTransactionDetails(detailsDTO);
-
     }
 
+    @GetMapping("/ie")
+    @Operation(summary = "获取本月收支")
+    public ResponseResult getIE(@RequestParam("type")@Parameter(description = "收支类型 0收 1支") Integer type) {
+        Integer ie = transactionHistoryService.getIE(type);
+        return ResponseResult.success(ie);
+
+    }
 }

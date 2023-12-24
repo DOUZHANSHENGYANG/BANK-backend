@@ -13,6 +13,14 @@ import java.util.Stack;
  * @since JDK 17
  */
 public class BizConstant {
+    public static final Integer II_DAY_LIMIT=1000000;
+    public static final Integer II_YEAR_LIMIT=20000000;
+    public static final Integer III_DAY_LIMIT=200000;
+    public static final Integer III_YEAR_LIMIT=5000000;
+    public static final Integer III_BALANCE_LIMIT=200000;
+    public static final Integer BANK_LIMIT=50000000;
+
+
     public static final Integer ID_CARD=1;
     public static final Integer BANKCARD=0;
     public static final Integer PIC_FRONT=0;
@@ -24,6 +32,7 @@ public class BizConstant {
     public static final String HASH_NUM="hash";
     public static final Integer HASH_COUNT=3;
     public static final Integer DEFAULT_MONEY=0;
+    public static final Integer THIRD_BALANCE = 200000;
     //银行卡没有实体
     public static Integer HAS_NOT_ENTITY=0;
     //银行卡有实体
